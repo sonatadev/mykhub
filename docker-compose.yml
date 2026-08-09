@@ -1,0 +1,67 @@
+services:
+
+  # ─────────────────────────────────────────────
+  # FRONTEND – nginx statico + proxy /api → backend
+  # container_name mantenuto "mykhub_web" per compatibilità con NPM
+  # ─────────────────────────────────────────────
+  frontend:
+    build: ./frontend
+    container_name: mykhub_web
+    restart: always
+    expose:
+      - "80"
+    depends_on:
+      - backend
+    networks:
+      - proxy_net
+      - internal_net
+
+  # ─────────────────────────────────────────────
+  # BACKEND – Node + Express + SQLite
+  # Solo su internal_net: non raggiungibile dall'esterno
+  # ─────────────────────────────────────────────
+  backend:
+    build: ./backend
+    container_name: mykhub_backend
+    restart: always
+    expose:
+      - "3000"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+      DB_PATH: /app/data/mykhub.db
+      NODE_ENV: production
+    volumes:
+      - backend_data:/app/data
+      - uploads_data:/app/uploads
+    networks:
+      - internal_net
+
+  # ─────────────────────────────────────────────
+  # DUCKDNS – aggiorna <tuo-sottodominio>.duckdns.org
+  # ─────────────────────────────────────────────
+  duckdns:
+    image: lscr.io/linuxserver/duckdns:latest
+    container_name: mykhub_duckdns
+    restart: always
+    environment:
+      TZ: Europe/Rome
+      SUBDOMAINS: ${DUCKDNS_SUBDOMAINS}
+      TOKEN: ${DUCKDNS_TOKEN}
+      UPDATE_IP: ipv4
+      LOG_FILE: "false"
+    networks:
+      - proxy_net
+
+volumes:
+  backend_data:
+  uploads_data:
+
+networks:
+  # DMZ per-app: condivisa con NPM. Solo frontend + duckdns.
+  proxy_net:
+    external: true
+    name: mykhub_edge
+  # Rete interna isolata: frontend ↔ backend, nessun accesso a internet.
+  internal_net:
+    driver: bridge
+    internal: true

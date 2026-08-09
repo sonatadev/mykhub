@@ -1,0 +1,61 @@
+<div class="page-header">
+  <h1 class="page-title">Impostazioni</h1>
+  <p class="page-subtitle">Personalizza mykhub</p>
+</div>
+
+<!-- Tema -->
+<div class="settings-section">
+  <h2>Aspetto</h2>
+  <div class="form-group" style="max-width:240px">
+    <label class="form-label">Tema</label>
+    <select class="form-select" id="s-theme">
+      <option value="light">Chiaro</option>
+      <option value="dark">Scuro</option>
+    </select>
+  </div>
+</div>
+
+<!-- Pomodoro -->
+<div class="settings-section">
+  <h2>Timer Pomodoro</h2>
+  <div class="form-row" style="max-width:400px">
+    <div class="form-group">
+      <label class="form-label">Sessione studio (min)</label>
+      <input class="form-input" type="number" id="s-work" min="1" max="120" value="25" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Pausa (min)</label>
+      <input class="form-input" type="number" id="s-break" min="1" max="60" value="5" />
+    </div>
+  </div>
+  <button class="btn btn-primary" id="btn-save-pomodoro">Salva</button>
+</div>
+
+<!-- AI -->
+<div class="settings-section">
+  <h2>Intelligenza Artificiale</h2>
+  <div class="form-group" style="max-width:480px">
+    <label class="form-label">API Key Anthropic</label>
+    <input class="form-input" type="password" id="s-api-key" placeholder="sk-ant-…" autocomplete="off" />
+    <p class="form-hint">La chiave viene salvata solo nel browser, mai inviata al server. Usata per generare domande dai riassunti.</p>
+  </div>
+</div>
+
+<!-- Export/Import -->
+<div class="settings-section">
+  <h2>Export / Import</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px">
+    <div class="form-group" style="margin:0">
+      <label class="form-label">Filtra per materia</label>
+      <select class="form-select" id="export-subject" style="width:auto">
+        <option value="">Tutte le materie</option>
+      </select>
+    </div>
+    <button class="btn btn-ghost" id="btn-export">⬇ Esporta JSON</button>
+  </div>
+  <div>
+    <button class="btn btn-ghost" id="btn-import-trigger">⬆ Importa JSON</button>
+    <input type="file" id="import-file" accept=".json" class="hidden" />
+    <p class="form-hint" style="margin-top:6px">Le schede duplicate (stesso titolo + testo + tipo) vengono saltate automaticamente.</p>
+  </div>
+</div>

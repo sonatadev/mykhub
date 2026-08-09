@@ -1,0 +1,36 @@
+# ── Secrets ──────────────────────────────────────────────────────────────────
+.env
+*.env.local
+
+# ── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+backend/node_modules/
+frontend/build/node_modules/
+
+# ── Bundle output (generato da frontend/build con esbuild) ───────────────────
+frontend/libs/
+
+# ── Database locale / dati ───────────────────────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+backend/db/mykhub.db
+backend/uploads/
+uploads/
+
+# ── Tooling ──────────────────────────────────────────────────────────────────
+graphify-out/
+.claude/
+
+# ── IDE ──────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

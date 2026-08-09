@@ -1,0 +1,40 @@
+<div class="page-header">
+  <h1 class="page-title">Modalità Studio</h1>
+  <p class="page-subtitle">Ripassa le tue schede con il timer Pomodoro</p>
+</div>
+
+<!-- Pomodoro timer -->
+<div class="timer-wrap">
+  <div class="timer-mode" id="timer-mode">Studio</div>
+  <div class="timer-display" id="timer-display">25:00</div>
+  <div class="timer-controls">
+    <button class="btn btn-primary" id="btn-timer-toggle">▶ Avvia</button>
+    <button class="btn btn-ghost" id="btn-timer-reset">↺ Reset</button>
+  </div>
+</div>
+
+<!-- Subject selector -->
+<div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+  <select class="form-select" id="study-subject" style="width:auto;min-width:180px">
+    <option value="">Caricamento…</option>
+  </select>
+  <button class="btn btn-primary" id="study-start">Carica schede</button>
+</div>
+
+<!-- Study area -->
+<div id="study-area" class="hidden">
+  <div class="study-card">
+    <div class="study-question" id="study-card-title"></div>
+    <div class="study-body" id="study-card-body"></div>
+  </div>
+
+  <div class="study-nav">
+    <button class="btn btn-ghost" id="btn-prev">← Precedente</button>
+    <span class="study-counter" id="study-counter">0 / 0</span>
+    <button class="btn btn-ghost" id="btn-next">Successiva →</button>
+  </div>
+
+  <div style="display:flex;justify-content:center;margin-top:16px">
+    <button class="btn btn-success" id="btn-done">✓ Segna studiata</button>
+  </div>
+</div>

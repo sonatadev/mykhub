@@ -1,0 +1,32 @@
+/* Font switching */
+[data-font="inter"]     { --font-editor: 'Inter', system-ui, -apple-system, sans-serif; }
+[data-font="georgia"]   { --font-editor: 'Georgia', serif; }
+[data-font="jetbrains"] { --font-editor: 'JetBrains Mono', monospace; }
+
+/* Dark theme — bg-sidebar/surface/input derivano da --bg-primary per supportare colori sfondo custom */
+[data-theme="dark"] {
+  --bg-primary:    #1e1e1e;
+  --bg-sidebar:    color-mix(in srgb, #000 28%, var(--bg-primary));
+  --bg-surface:    color-mix(in srgb, #fff  4%, var(--bg-primary));
+  --bg-input:      color-mix(in srgb, #fff  8%, var(--bg-primary));
+  --text-primary:  #dcddde;
+  --text-secondary:#8b8b8b;
+  --text-muted:    #555555;
+  --border:        rgba(255,255,255,0.08);
+  --scrollbar:     color-mix(in srgb, #fff 20%, var(--bg-primary));
+  --bg-canvas:     color-mix(in srgb, #000 32%, var(--bg-primary));
+}
+
+/* Light theme */
+[data-theme="light"] {
+  --bg-primary:    #ffffff;
+  --bg-sidebar:    color-mix(in srgb, #000  4%, var(--bg-primary));
+  --bg-surface:    color-mix(in srgb, #000  5%, var(--bg-primary));
+  --bg-input:      color-mix(in srgb, #000  3%, var(--bg-primary));
+  --text-primary:  #1a1a1a;
+  --text-secondary:#666666;
+  --text-muted:    #aaaaaa;
+  --border:        rgba(0,0,0,0.10);
+  --scrollbar:     #c0c0c0;
+  --bg-canvas:     color-mix(in srgb, #000 10%, var(--bg-primary));
+}
