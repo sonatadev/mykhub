@@ -397,3 +397,31 @@ body, #auth-view, #app-view {
 .settings-panel { border-left: 3px solid var(--accent); }
 .sp-palette-card.selected,
 .sp-swatch.selected { border-color: var(--accent); }
+.sp-font-option {
+  border-width: 2px;
+  border-color: var(--accent);
+  border-radius: 6px;
+}
+.sp-font-option.selected { border-color: var(--accent); box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 40%, transparent); }
+.sp-account-info { border-width: 2px; border-color: var(--accent); border-radius: 6px; }
+
+/* Context menu (right-click on a space/page) — was the one leftover
+   plain/flat surface once everything else went chunky */
+.ctx-menu {
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,.5);
+}
+.ctx-item:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+
+/* ── narrow screens: shrink the banner so it doesn't overflow/wrap ── */
+@media (max-width: 768px) {
+  .y2k-topbanner { padding: 8px 14px; }
+  .y2k-topbanner-left { gap: 8px; }
+  .y2k-spin-star { width: 18px; height: 18px; }
+  .y2k-banner-logo { font-size: 20px; }
+  .y2k-badge { display: none; }
+  .save-indicator { font-size: 10px; right: 14px; }
+  .editor-inner::before { transform: scale(0.7) rotate(-8deg); }
+  .editor-inner::after  { transform: scale(0.7) rotate(12deg); }
+}

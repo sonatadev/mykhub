@@ -514,12 +514,14 @@
   #app-view { display: block !important; height: auto !important; overflow: visible !important; flex-direction: column !important; }
   .sidebar, .topbar, .editor-toolbar, .bubble-toolbar, .save-indicator,
   .editor-topbar, #settings-container, #toast-container,
-  .empty-state, .page-label { display: none !important; }
+  .empty-state, .page-label,
+  .y2k-topbanner, .y2k-ticker, .y2k-counter-widget { display: none !important; }
   .main-area { display: block !important; height: auto !important; overflow: visible !important; }
   /* #editor-area has inline overflow:hidden — must override with !important */
   #editor-area { display: block !important; height: auto !important; overflow: visible !important; min-height: 0 !important; }
   .editor-wrapper { display: block !important; height: auto !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
   .editor-inner { display: block !important; height: auto !important; flex: none !important; max-width: 100% !important; padding: 0 !important; border: none !important; box-shadow: none !important; background: #fff !important; }
+  .editor-inner::before, .editor-inner::after { display: none !important; }
   /* Force readable font regardless of user's editor font setting */
   .page-title-field, .tiptap-editor {
     font-family: 'Georgia', serif !important;
