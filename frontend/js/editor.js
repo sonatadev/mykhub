@@ -308,14 +308,25 @@ export function openPageInEditor(pageId, pageContent, ydocState) {
   let knownUpdatedAt = null;
   api.getPage(pageId).then(p => { knownUpdatedAt = p.updated_at; }).catch(() => {});
   pollTimer = setInterval(async () => {
-    if (!editor) return;
+    if (!editor || !ydoc) return;
     if (provider?.wsconnected) return; // Y.js real-time is working, no need to poll
     if (Date.now() - lastEditTime < 5000) return; // user is actively typing
     try {
       const page = await api.getPage(pageId);
       if (knownUpdatedAt && page.updated_at !== knownUpdatedAt) {
         knownUpdatedAt = page.updated_at;
-        editor.commands.setContent(page.content);
+        // Merge the server's Y.js state instead of replacing the document:
+        // a CRDT update is commutative, so it can never discard local
+        // keystrokes that haven't reached the server yet. setContent() here
+        // used to blow away the whole doc with the (separately-saved, often
+        // stale) `content` column, which is what caused text typed during a
+        // brief WebSocket drop to vanish.
+        if (page.ydoc_state) {
+          try {
+            const bytes = Uint8Array.from(atob(page.ydoc_state), c => c.charCodeAt(0));
+            Y.applyUpdate(ydoc, bytes);
+          } catch (_) {}
+        }
       }
     } catch (_) {}
   }, 4000);
