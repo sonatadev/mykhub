@@ -116,7 +116,13 @@ body, #auth-view, #app-view {
   background: #050309;
   padding: 10px 26px;
   border-bottom: 4px dashed #ffe600;
+  animation: y2kSlideDown .4s cubic-bezier(.22,1,.36,1);
 }
+@keyframes y2kSlideDown {
+  from { transform: translateY(-100%); }
+  to   { transform: translateY(0); }
+}
+.y2k-ticker { animation: y2kSlideDown .4s .05s cubic-bezier(.22,1,.36,1) both; }
 .y2k-topbanner-left { display: flex; align-items: center; gap: 12px; transform: rotate(-1deg); }
 .y2k-banner-logo {
   font-family: 'Luckiest Guy', cursive;
@@ -136,8 +142,12 @@ body, #auth-view, #app-view {
   padding: 4px 9px;
   border-radius: 3px;
   border: 2px solid #000;
-  transform: rotate(6deg);
   white-space: nowrap;
+  animation: y2kBadgeWiggle 3s ease-in-out infinite;
+}
+@keyframes y2kBadgeWiggle {
+  0%, 100% { transform: rotate(4deg); }
+  50%      { transform: rotate(8deg); }
 }
 
 /* Real save-status chip, relocated from its default bottom-right spot
@@ -219,7 +229,9 @@ body, #auth-view, #app-view {
   border: 2px solid #000;
   box-shadow: 3px 3px 0 rgba(0,0,0,.5);
   font-weight: 700;
+  transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease;
 }
+.btn:hover:not(:disabled) { transform: translate(-1px, -1px) rotate(-1deg); box-shadow: 4px 4px 0 rgba(0,0,0,.5); }
 .btn:active { box-shadow: 1px 1px 0 rgba(0,0,0,.5); transform: translate(2px, 2px); }
 .btn-primary { background: var(--accent); color: #fff; }
 .btn-danger  { background: #ff4d4d; color: #fff; }
@@ -236,9 +248,11 @@ body, #auth-view, #app-view {
   border-width: 2px;
   border-color: var(--accent);
   box-shadow: inset 0 1px 4px rgba(0,0,0,.4);
+  transition: box-shadow .15s ease, transform .15s cubic-bezier(.34,1.56,.64,1);
 }
 .form-input:focus {
   box-shadow: inset 0 1px 4px rgba(0,0,0,.4), 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+  transform: scale(1.015);
 }
 
 /* ── sidebar shell ── */
@@ -271,7 +285,14 @@ body, #auth-view, #app-view {
 .space-item:nth-of-type(5n+3) { --m: #ffe600; transform: rotate(-0.8deg); }
 .space-item:nth-of-type(5n+4) { --m: #3ddc73; transform: rotate(1deg); }
 .space-item:nth-of-type(5n+5) { --m: #a855ff; transform: rotate(-0.7deg); }
-.space-item:hover { z-index: 2; }
+.space-item {
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+}
+.space-item:hover {
+  z-index: 2;
+  transform: scale(1.02) rotate(0deg) translateY(-2px);
+  box-shadow: 6px 6px 0 color-mix(in srgb, var(--m) 55%, transparent);
+}
 .space-header { background: var(--m); padding: 8px; }
 .space-header:hover { filter: brightness(1.1); }
 .space-header .space-name { color: #000; font-weight: 800; }
@@ -295,7 +316,13 @@ body, #auth-view, #app-view {
   font-weight: 700;
   justify-content: center;
 }
-.sidebar-footer-btn:hover { background: var(--bg-input); color: var(--text-primary); }
+.sidebar-footer-btn { transition: transform .15s cubic-bezier(.34,1.56,.64,1), box-shadow .15s ease, background .12s ease; }
+.sidebar-footer-btn:hover {
+  background: var(--bg-input);
+  color: var(--text-primary);
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--accent) 45%, transparent);
+}
 
 /* ── editor "paper": hard sticker frame. No rotation on the writing
    surface itself, so it stays comfortable to actually type in. ── */
@@ -332,7 +359,11 @@ body, #auth-view, #app-view {
   background: #ffe600;
   border: 1px solid #000;
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  transform: rotate(12deg);
+  animation: y2kStarPulse 2.4s ease-in-out infinite;
+}
+@keyframes y2kStarPulse {
+  0%, 100% { transform: rotate(12deg) scale(1); }
+  50%      { transform: rotate(18deg) scale(1.08); }
 }
 .editor-divider {
   height: 6px;
@@ -381,7 +412,9 @@ body, #auth-view, #app-view {
   border-radius: 5px;
   background: var(--bg-input);
   box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: transform .12s cubic-bezier(.34,1.56,.64,1), box-shadow .12s ease;
 }
+.bubble-btn:hover { transform: translate(-1px, -1px); box-shadow: 3px 3px 0 color-mix(in srgb, var(--accent) 40%, transparent); }
 .bubble-btn.active { background: var(--accent); color: #fff; border-color: #000; }
 
 /* ── modals / auth box ── */
@@ -391,9 +424,21 @@ body, #auth-view, #app-view {
   border: 4px solid var(--accent);
   border-radius: 10px;
   box-shadow: 6px 6px 0 rgba(0,0,0,.5);
+  animation: y2kPopIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes y2kPopIn {
+  from { opacity: 0; transform: scale(.9) rotate(-2deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
-.toast { border-width: 2px; border-radius: 6px; font-weight: 600; box-shadow: 3px 3px 0 rgba(0,0,0,.5); }
+.toast {
+  border-width: 2px; border-radius: 6px; font-weight: 600; box-shadow: 3px 3px 0 rgba(0,0,0,.5);
+  animation: y2kToastIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes y2kToastIn {
+  from { opacity: 0; transform: translateY(16px) scale(.9); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
 .settings-panel { border-left: 3px solid var(--accent); }
 .sp-palette-card.selected,
 .sp-swatch.selected { border-color: var(--accent); }
