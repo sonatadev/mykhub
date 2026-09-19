@@ -69,9 +69,13 @@ function applyTheme(settings = {}) {
   const font = settings.font || 'inter';
   const accent = settings.accent || '#7c6af7';
   const bgColor = settings.bgColor || null;
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const isDark = bgColor ? colorIsDark(bgColor) : (theme === 'dark' || (theme === 'system' && prefersDark));
-  document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  if (theme === 'y2k') {
+    document.documentElement.dataset.theme = 'y2k';
+  } else {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = bgColor ? colorIsDark(bgColor) : (theme === 'dark' || (theme === 'system' && prefersDark));
+    document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
+  }
   document.documentElement.dataset.font = font;
   document.documentElement.style.setProperty('--accent', accent);
   if (bgColor) {

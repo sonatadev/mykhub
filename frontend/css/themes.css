@@ -30,3 +30,128 @@
   --scrollbar:     #c0c0c0;
   --bg-canvas:     color-mix(in srgb, #000 10%, var(--bg-primary));
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Y2K theme — chrome/glossy Web 2.0 buttons on a pastel desk, readable
+   white "paper" for the actual notes so studying isn't compromised.
+   ══════════════════════════════════════════════════════════════════════ */
+[data-theme="y2k"] {
+  --bg-primary:    #fffdf7;
+  --bg-sidebar:    linear-gradient(160deg, #dbeaff 0%, #ffe1f6 55%, #fff6cf 100%);
+  --bg-surface:    #f2ecff;
+  --bg-input:      #ffffff;
+  --text-primary:  #241463;
+  --text-secondary:#5b4b9e;
+  --text-muted:    #9a8fc9;
+  --border:        #b9a6ff;
+  --scrollbar:     linear-gradient(180deg, #00c8ff, #ff2fb0);
+  --bg-canvas:     #dbeaff;
+  --font-ui:       'Baloo 2', 'Trebuchet MS', Verdana, sans-serif;
+}
+
+[data-theme="y2k"] .tiptap-editor pre {
+  background: var(--bg-surface);
+}
+
+/* Chunky pill "jellybean" buttons with a glossy top highlight */
+[data-theme="y2k"] .btn {
+  position: relative;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(36,20,99,0.18);
+  box-shadow: 0 2px 5px rgba(36,20,99,0.22);
+  font-weight: 700;
+}
+[data-theme="y2k"] .btn::before {
+  content: '';
+  position: absolute; inset: 0 0 55% 0;
+  background: linear-gradient(rgba(255,255,255,0.65), rgba(255,255,255,0));
+  pointer-events: none;
+}
+[data-theme="y2k"] .btn-primary { background: linear-gradient(180deg, #ff7bd6, #ff2fb0 60%, #e0189a); color: #fff; }
+[data-theme="y2k"] .btn-ghost   { background: linear-gradient(180deg, #ffffff, #eee6ff); }
+[data-theme="y2k"] .btn-danger  { background: linear-gradient(180deg, #ff9a8b, #ef4444 60%, #d63333); }
+[data-theme="y2k"] .btn-icon:hover { background: var(--bg-surface); }
+
+[data-theme="y2k"] .form-input {
+  border-radius: 10px;
+  border-width: 2px;
+  box-shadow: inset 0 1px 3px rgba(36,20,99,0.12);
+}
+[data-theme="y2k"] .form-input:focus {
+  box-shadow: inset 0 1px 3px rgba(36,20,99,0.12), 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+/* Sidebar: pastel desk + shimmering rainbow logo */
+[data-theme="y2k"] .sidebar {
+  border-right: 3px solid var(--border);
+  box-shadow: 2px 0 0 #fff, 4px 0 14px rgba(123,47,247,0.15);
+}
+[data-theme="y2k"] .sidebar-logo,
+[data-theme="y2k"] .auth-logo {
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: linear-gradient(90deg, #ff2fb0, #7b2ff7, #00c8ff, #ff2fb0);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: y2kShimmer 6s linear infinite;
+}
+@keyframes y2kShimmer { to { background-position: 300% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="y2k"] .sidebar-logo,
+  [data-theme="y2k"] .auth-logo { animation: none; }
+}
+
+[data-theme="y2k"] .page-row.active {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 18%, transparent), transparent);
+  border-radius: 6px;
+}
+[data-theme="y2k"] .space-header:hover,
+[data-theme="y2k"] .page-row:hover { border-radius: 6px; }
+
+/* Editor "paper" — a colorful picture-frame border around a plain,
+   readable white page so the actual notes stay easy to read */
+[data-theme="y2k"] .editor-inner {
+  border: 3px solid var(--border);
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -3px 0 var(--accent), 4px 0 18px rgba(123,47,247,0.18), -4px 0 18px rgba(123,47,247,0.18);
+}
+[data-theme="y2k"] .editor-toolbar {
+  border: 2px solid var(--border);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, #f2ecff);
+  padding: 6px 10px;
+  top: -20px;
+}
+[data-theme="y2k"] .bubble-btn { border-radius: 999px; }
+[data-theme="y2k"] .bubble-btn.active {
+  background: linear-gradient(180deg, #ff7bd6, #ff2fb0);
+  color: #fff;
+}
+
+/* Modals / auth box get a retro "window" title strip */
+[data-theme="y2k"] .modal,
+[data-theme="y2k"] .auth-box,
+[data-theme="y2k"] .share-modal {
+  border: 3px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  padding-top: 44px;
+}
+[data-theme="y2k"] .modal::before,
+[data-theme="y2k"] .auth-box::before,
+[data-theme="y2k"] .share-modal::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 30px;
+  background: linear-gradient(90deg, #ff2fb0, #7b2ff7, #00c8ff);
+}
+
+[data-theme="y2k"] .toast { border-radius: 999px; border-width: 2px; font-weight: 600; }
+[data-theme="y2k"] .settings-panel { border-left: 3px solid var(--border); }
+[data-theme="y2k"] .sp-palette-card.selected,
+[data-theme="y2k"] .sp-swatch.selected { border-color: var(--accent); }

@@ -5,6 +5,8 @@ const PALETTES = [
   { id: 'ambra',    name: 'Ambra',    bg: '#1d1610', accent: '#f59e0b' },
   { id: 'alba',     name: 'Alba',     bg: '#fafaf8', accent: '#7c6af7' },
   { id: 'carta',    name: 'Carta',    bg: '#f5f0e8', accent: '#c2603a' },
+  { id: 'y2k',      name: 'Y2K',      bg: '#fffdf7', accent: '#ff2fb0', theme: 'y2k',
+    preview: 'linear-gradient(135deg,#00c8ff 0%,#7b2ff7 45%,#ff2fb0 100%)' },
 ];
 
 let saveCallback = null;
@@ -40,7 +42,7 @@ export function openSettingsPanel(settings = {}, email = '') {
           <div class="sp-palettes" id="sp-palettes">
             ${PALETTES.map(p => `
               <button class="sp-palette-card" data-palette="${p.id}" title="${p.name}">
-                <div class="sp-palette-preview" style="background:${p.bg}">
+                <div class="sp-palette-preview" style="background:${p.preview || p.bg}">
                   <div class="sp-palette-dot" style="background:${p.accent}"></div>
                   <svg class="sp-palette-check" width="14" height="14" viewBox="0 0 16 16" fill="none">
                     <circle cx="8" cy="8" r="7" fill="rgba(255,255,255,0.9)"/>
@@ -214,7 +216,7 @@ function workingToSettings(working) {
   return {
     bgColor: palette.bg,
     accent:  palette.accent,
-    theme:   colorIsDark(palette.bg) ? 'dark' : 'light',
+    theme:   palette.theme || (colorIsDark(palette.bg) ? 'dark' : 'light'),
     font:    working.font,
   };
 }
