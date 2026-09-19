@@ -187,6 +187,7 @@ body, #auth-view, #app-view {
 /* ── marquee ticker ── */
 .y2k-ticker {
   display: block;
+  position: relative;
   flex-shrink: 0;
   overflow: hidden;
   background: #ffe600;
@@ -197,13 +198,33 @@ body, #auth-view, #app-view {
 }
 .y2k-ticker-track {
   display: inline-block;
-  animation: y2kMarquee 14s linear infinite;
+  animation: y2kMarquee 60s linear infinite;
   font-size: 11px;
   font-weight: 700;
   color: #1a0a33;
 }
 .y2k-ticker-track span { padding: 0 14px; }
 @keyframes y2kMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.y2k-ticker-close {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  line-height: 16px;
+  padding: 0;
+  border: 2px solid #000;
+  border-radius: 50%;
+  background: #fff5;
+  color: #1a0a33;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  z-index: 2;
+}
+.y2k-ticker-close:hover { background: #fff; }
 
 /* ── hit-counter sticker (real page count) ── */
 .y2k-counter-widget {

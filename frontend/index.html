@@ -92,10 +92,19 @@
         <span class="y2k-badge">✧ nuovo layout ✧</span>
       </div>
     </div>
-    <div class="y2k-ticker"><div class="y2k-ticker-track">
-      <span>★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★</span>
-      <span>★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★</span>
-    </div></div>
+    <div class="y2k-ticker" id="y2k-ticker"><div class="y2k-ticker-track"><span>★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★</span><span>★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★ le tue note, ovunque tu sia ★ ricorda il pomodoro ★ buono studio ★</span></div><button class="y2k-ticker-close" id="y2k-ticker-close" aria-label="Nascondi ticker" title="Nascondi (distrae mentre studi?)">×</button></div>
+    <script>
+      (function () {
+        var ticker = document.getElementById('y2k-ticker');
+        var closeBtn = document.getElementById('y2k-ticker-close');
+        if (!ticker || !closeBtn) return;
+        if (localStorage.getItem('mkh_ticker_hidden') === '1') ticker.style.display = 'none';
+        closeBtn.addEventListener('click', function () {
+          ticker.style.display = 'none';
+          localStorage.setItem('mkh_ticker_hidden', '1');
+        });
+      })();
+    </script>
 
     <div class="app-body">
     <nav class="sidebar" id="sidebar">
