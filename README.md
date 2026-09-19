@@ -1,15 +1,14 @@
 # mykhub
 
-Il tuo spazio di studio personale — una PWA self-hosted per organizzare appunti, flashcard e sessioni d'esame.
+Il tuo spazio di studio personale — una PWA self-hosted per organizzare appunti in spazi di lavoro con pagine annidate.
 
 ## Funzionalità
 
 - **Spaces & Pages** — organizza il materiale in spazi di lavoro con pagine annidate
 - **Editor ricco** — basato su TipTap/ProseMirror (tabelle, task list, immagini, link)
 - **Collaborazione real-time** — sincronizzazione via Yjs su WebSocket
-- **Flashcard & Esami** — crea mazzi di carte e simula sessioni di verifica
-- **Condivisione pubblica** — pubblica una pagina tramite link
-- **Export** — esporta i contenuti di studio
+- **Condivisione pubblica** — pubblica una pagina o uno spazio tramite link
+- **Backup** — esporta/importa un dump completo di spazi e pagine
 - **Installabile** — PWA con manifest e icone
 
 ## Stack
@@ -65,7 +64,6 @@ backend/
   db/          schema SQL e inizializzazione SQLite
   server.js    entrypoint Express + WebSocket
 frontend/
-  pages/       dashboard, library, study, exam, settings
   build/       sorgenti del bundler esbuild
   css/  js/    stili e logica client
 ```
