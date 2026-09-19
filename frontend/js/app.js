@@ -18,6 +18,8 @@ const hamburger = document.getElementById('hamburger');
 const addPageMobile = document.getElementById('btn-add-page-mobile');
 const addSpaceButton = document.getElementById('btn-add-space');
 const settingsButton = document.getElementById('btn-settings');
+const mainAreaEl = document.getElementById('main-area');
+const sidebarEl = document.getElementById('sidebar');
 
 const state = {
   user: null,
@@ -44,6 +46,8 @@ function showEmpty(message) {
   emptyState.querySelector('p').textContent = message;
   emptyState.classList.remove('hidden');
   editorWrapper.classList.add('hidden');
+  const winbarTitle = document.getElementById('desktop-winbar-title');
+  if (winbarTitle) winbarTitle.textContent = 'mykhub';
 }
 
 function showEditor() {
@@ -113,6 +117,7 @@ async function refreshSpaces() {
     const allPages = Object.values(state.pagesBySpace).flat();
     const y2kCounter = document.getElementById('y2k-counter');
     if (y2kCounter) y2kCounter.textContent = String(allPages.length).padStart(6, '0');
+    renderDesktopIcons();
     const lastPage = lastPageId && allPages.find(p => p.id === lastPageId);
     if (lastPage) {
       state.selectedSpaceId = lastPage.space_id;
@@ -159,6 +164,15 @@ async function selectPage(pageId) {
     renderSidebar(state.spaces, state.pagesBySpace, state.selectedSpaceId, state.selectedPageId);
     pageTitle.textContent = page.title || 'Senza titolo';
     topbarTitle.textContent = page.title || 'Pagina senza titolo';
+    const winbarTitle = document.getElementById('desktop-winbar-title');
+    if (winbarTitle) winbarTitle.textContent = page.title || 'Senza titolo';
+    const taskbarPageBtn = document.getElementById('desktop-taskbar-page');
+    if (taskbarPageBtn) {
+      taskbarPageBtn.textContent = '📄 ' + (page.title || 'Senza titolo');
+      taskbarPageBtn.classList.remove('hidden');
+    }
+    mainAreaEl?.classList.remove('desktop-minimized');
+    sidebarEl?.classList.remove('desktop-startmenu-open');
     const space = state.spaces.find(s => s.id === page.space_id);
     const bc = document.getElementById('editor-breadcrumb');
     if (bc) {
@@ -366,6 +380,110 @@ function showInviteModal(space) {
   });
 }
 
+/* ── Desktop mode: an alternate shell around the same real data/editor.
+   Toggled from Settings → Vista; nothing about how pages load, save or
+   sync changes — only the navigation chrome around them does. ── */
+function isDesktopMode() {
+  return localStorage.getItem('mkh_view_mode') === 'desktop';
+}
+
+function renderDesktopIcons() {
+  const wrap = document.getElementById('desktop-icons');
+  if (!wrap || !isDesktopMode()) return;
+  wrap.innerHTML = state.spaces.map((s) => `
+    <div class="desktop-icon" data-space-id="${s.id}" title="${escapeHtml(s.name)}">
+      <svg width="52" height="44" viewBox="0 0 52 44" aria-hidden="true"><path d="M2 8a4 4 0 0 1 4-4h12l6 6h22a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z" fill="${escapeHtml(s.color || '#7c6af7')}" stroke="#000" stroke-width="2"/></svg>
+      <span>${escapeHtml(s.name)}</span>
+    </div>
+  `).join('');
+  wrap.querySelectorAll('.desktop-icon').forEach((icon) => {
+    icon.addEventListener('click', () => {
+      wrap.querySelectorAll('.desktop-icon.selected').forEach((i) => i.classList.remove('selected'));
+      icon.classList.add('selected');
+    });
+    icon.addEventListener('dblclick', () => {
+      selectSpace(parseInt(icon.dataset.spaceId, 10));
+      mainAreaEl.classList.remove('desktop-minimized');
+    });
+  });
+}
+
+function startDesktopClock() {
+  const el = document.getElementById('desktop-clock');
+  if (!el) return;
+  const tick = () => {
+    const d = new Date();
+    el.textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  };
+  tick();
+  setInterval(tick, 15000);
+}
+
+function applyViewMode() {
+  const desktop = isDesktopMode();
+  appView.classList.toggle('desktop-mode', desktop);
+  document.getElementById('desktop-taskbar')?.classList.toggle('hidden', !desktop);
+  document.getElementById('desktop-winbar')?.classList.toggle('hidden', !desktop);
+  if (desktop) {
+    renderDesktopIcons();
+    startDesktopClock();
+  }
+}
+
+function initDesktopShell() {
+  const startBtn = document.getElementById('desktop-start-btn');
+  const taskbarPageBtn = document.getElementById('desktop-taskbar-page');
+  const dragHandle = document.getElementById('desktop-winbar-drag');
+
+  startBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebarEl.classList.toggle('desktop-startmenu-open');
+  });
+  document.addEventListener('click', (e) => {
+    if (!sidebarEl.classList.contains('desktop-startmenu-open')) return;
+    if (sidebarEl.contains(e.target) || startBtn?.contains(e.target)) return;
+    sidebarEl.classList.remove('desktop-startmenu-open');
+  });
+
+  document.getElementById('desktop-win-min')?.addEventListener('click', () => {
+    mainAreaEl.classList.add('desktop-minimized');
+    taskbarPageBtn.classList.remove('hidden');
+  });
+  taskbarPageBtn?.addEventListener('click', () => {
+    mainAreaEl.classList.toggle('desktop-minimized');
+  });
+  document.getElementById('desktop-win-max')?.addEventListener('click', () => {
+    mainAreaEl.classList.toggle('desktop-maxed');
+  });
+  document.getElementById('desktop-win-close')?.addEventListener('click', () => {
+    state.currentPage = null;
+    state.selectedPageId = null;
+    localStorage.removeItem('mkh_last_page');
+    closePageEditor();
+    clearEditor();
+    showEmpty('Fai doppio clic su un’icona per iniziare');
+    taskbarPageBtn.classList.add('hidden');
+    renderSidebar(state.spaces, state.pagesBySpace, state.selectedSpaceId, state.selectedPageId);
+  });
+
+  let dragOffset = null;
+  dragHandle?.addEventListener('mousedown', (e) => {
+    if (!isDesktopMode() || mainAreaEl.classList.contains('desktop-maxed')) return;
+    const rect = mainAreaEl.getBoundingClientRect();
+    dragOffset = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    mainAreaEl.classList.add('desktop-dragging');
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!dragOffset) return;
+    mainAreaEl.style.left = Math.max(0, e.clientX - dragOffset.x) + 'px';
+    mainAreaEl.style.top = Math.max(0, e.clientY - dragOffset.y) + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    dragOffset = null;
+    mainAreaEl.classList.remove('desktop-dragging');
+  });
+}
+
 async function start() {
   initAuth({
     onLogin: async ({ id, email, settings, token }) => {
@@ -376,6 +494,7 @@ async function start() {
       initEditor({ onChange: handleEditorChange, user: state.user });
       await refreshSpaces();
       showApp();
+      applyViewMode();
     },
     onLogout: () => logout(),
   });
@@ -406,6 +525,7 @@ async function start() {
   });
 
   initSettings({ onSave: handleSettingsSave, onPreview: applyTheme, onRestore: refreshSpaces });
+  initDesktopShell();
 
   addSpaceButton.addEventListener('click', () => {
     showPrompt({
@@ -475,6 +595,7 @@ async function start() {
       initEditor({ onChange: handleEditorChange, user: state.user });
       refreshSpaces();
       showApp();
+      applyViewMode();
     }).catch(() => {
       api.setToken(null);
       showAuth();

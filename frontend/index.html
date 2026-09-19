@@ -144,7 +144,20 @@
       </div>
     </nav>
 
-    <div class="main-area">
+    <div id="desktop-icons"></div>
+
+    <div class="main-area" id="main-area">
+      <div id="desktop-winbar" class="hidden">
+        <div id="desktop-winbar-drag">
+          <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 7.2L22 11l-7.4 2.8L12 21l-2.6-7.2L2 11l7.4-2.8L12 1z" fill="#ffe600"/></svg>
+          <span id="desktop-winbar-title">mykhub</span>
+        </div>
+        <div id="desktop-winbar-btns">
+          <button id="desktop-win-min" title="Riduci a icona">_</button>
+          <button id="desktop-win-max" title="Massimizza">▢</button>
+          <button id="desktop-win-close" title="Chiudi pagina">✕</button>
+        </div>
+      </div>
       <div class="topbar">
         <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
         <div class="topbar-title" id="topbar-title">mykhub</div>
@@ -212,6 +225,16 @@
         </div>
       </div>
     </div>
+    </div>
+
+    <div id="desktop-taskbar" class="hidden">
+      <button id="desktop-start-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l2.6 7.2L22 11l-7.4 2.8L12 21l-2.6-7.2L2 11l7.4-2.8L12 1z" fill="#ffe600"/></svg>
+        <span>start</span>
+      </button>
+      <button id="desktop-taskbar-page" class="hidden"></button>
+      <div style="flex:1"></div>
+      <div id="desktop-clock"></div>
     </div>
   </div>
 

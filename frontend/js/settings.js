@@ -90,6 +90,14 @@ export function openSettingsPanel(settings = {}, email = '') {
         </div>
 
         <div class="sp-section">
+          <div class="sp-section-title">Vista</div>
+          <div class="sp-theme-row">
+            <button class="sp-theme-btn" data-view="classic">Classica</button>
+            <button class="sp-theme-btn" data-view="desktop">Desktop</button>
+          </div>
+        </div>
+
+        <div class="sp-section">
           <div class="sp-section-title">Animazioni</div>
           <label for="sp-reduce-motion" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:4px;background:var(--bg-input);cursor:pointer;">
             <input type="checkbox" id="sp-reduce-motion" style="width:16px;height:16px;margin:0;flex-shrink:0;accent-color:var(--accent);">
@@ -119,6 +127,10 @@ export function openSettingsPanel(settings = {}, email = '') {
     container.querySelectorAll('.sp-font-option').forEach(opt =>
       opt.classList.toggle('selected', opt.dataset.font === working.font)
     );
+    const currentView = localStorage.getItem('mkh_view_mode') === 'desktop' ? 'desktop' : 'classic';
+    container.querySelectorAll('.sp-theme-btn[data-view]').forEach(btn =>
+      btn.classList.toggle('active', btn.dataset.view === currentView)
+    );
   }
 
   const originalSettings = workingToSettings({ paletteId: findPaletteId(settings), font: settings.font || 'inter' });
@@ -141,6 +153,15 @@ export function openSettingsPanel(settings = {}, email = '') {
 
   container.querySelector('#sp-close').addEventListener('click', closePanel);
   backdrop.addEventListener('click', closePanel);
+
+  container.querySelectorAll('.sp-theme-btn[data-view]').forEach(btn =>
+    btn.addEventListener('click', () => {
+      const current = localStorage.getItem('mkh_view_mode') === 'desktop' ? 'desktop' : 'classic';
+      if (btn.dataset.view === current) return;
+      localStorage.setItem('mkh_view_mode', btn.dataset.view);
+      location.reload();
+    })
+  );
 
   const motionCheckbox = container.querySelector('#sp-reduce-motion');
   motionCheckbox.checked = localStorage.getItem('mkh_reduce_motion') === '1';

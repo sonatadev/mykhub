@@ -561,3 +561,131 @@ body, #auth-view, #app-view {
   .editor-inner::before { --tape-scale: 0.7; }
   .editor-inner::after  { --star-scale: 0.7; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Desktop mode — an alternate shell (Settings → Vista) around the exact
+   same real editor/collab/sidebar logic: spaces become desktop icons,
+   the sidebar becomes a Start-menu popup, the editor becomes a
+   draggable window, and a taskbar replaces the permanent left column.
+   Nothing about how pages actually load/save/sync changes.
+   ══════════════════════════════════════════════════════════════════════ */
+#app-view.desktop-mode .app-body { position: relative; overflow: hidden; }
+
+/* sidebar → Start-menu popup (identical content/behavior, just floated) */
+#app-view.desktop-mode .sidebar {
+  position: fixed;
+  left: 12px;
+  bottom: 64px;
+  top: auto;
+  width: 300px;
+  max-height: 62vh;
+  z-index: 700;
+  border: 3px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 8px 8px 0 rgba(0,0,0,.5);
+  display: none;
+  animation: y2kPopIn .2s cubic-bezier(.34,1.56,.64,1);
+}
+#app-view.desktop-mode .sidebar.desktop-startmenu-open { display: flex; }
+
+/* desktop icon backdrop, fills the space the sidebar used to occupy */
+#desktop-icons {
+  display: none;
+  flex: 1;
+  position: relative;
+  padding: 24px;
+}
+#app-view.desktop-mode #desktop-icons { display: flex; flex-wrap: wrap; align-content: flex-start; gap: 22px; }
+.desktop-icon {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  width: 84px; cursor: pointer; user-select: none; padding: 6px; border-radius: 6px;
+}
+.desktop-icon span {
+  font-family: 'Luckiest Guy', cursive; font-size: 12px; text-align: center; color: #fff;
+  -webkit-text-stroke: 1px #000; paint-order: stroke fill; text-shadow: 1px 1px 0 #000;
+  line-height: 1.25;
+}
+.desktop-icon.selected { outline: 2px dashed var(--accent); background: rgba(255,255,255,.08); }
+.desktop-icon svg { filter: drop-shadow(2px 2px 0 rgba(0,0,0,.5)); transition: transform .12s ease; }
+.desktop-icon:hover svg { transform: scale(1.08) rotate(-2deg); }
+
+/* editor → floating draggable window */
+#app-view.desktop-mode .main-area {
+  position: absolute;
+  top: 40px; left: 260px;
+  width: min(920px, calc(100% - 300px));
+  height: calc(100% - 80px);
+  border: 4px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 10px 10px 0 rgba(0,0,0,.55);
+  overflow: hidden;
+  background: var(--bg-primary);
+  transition: none;
+}
+#app-view.desktop-mode .main-area.desktop-dragging { transition: none; cursor: grabbing; }
+#app-view.desktop-mode .main-area.desktop-minimized { display: none; }
+#app-view.desktop-mode .main-area.desktop-maxed {
+  top: 0 !important; left: 0 !important; width: 100% !important; height: calc(100% - 52px) !important;
+  border-radius: 0;
+}
+#app-view.desktop-mode .editor-wrapper,
+#app-view.desktop-mode #editor-area { height: 100%; }
+
+#desktop-winbar {
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  background: linear-gradient(90deg, var(--accent), #a855ff, #00e5ff, var(--accent));
+  background-size: 300% 100%;
+  animation: shimmerBarWin 6s linear infinite;
+  border-bottom: 3px solid #000;
+}
+@keyframes shimmerBarWin { to { background-position: 300% 0; } }
+#desktop-winbar-drag { display: flex; align-items: center; gap: 8px; cursor: grab; flex: 1; min-width: 0; }
+#desktop-winbar-drag:active { cursor: grabbing; }
+#desktop-winbar-title {
+  font-family: 'Luckiest Guy', cursive; font-size: 13px; color: #fff;
+  -webkit-text-stroke: 1px #000; paint-order: stroke fill; text-shadow: 1px 1px 0 #000;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#desktop-winbar-btns { display: flex; gap: 6px; flex-shrink: 0; }
+#desktop-winbar-btns button {
+  width: 20px; height: 20px; border: 2px solid #000; border-radius: 4px;
+  font-weight: 900; font-size: 10px; line-height: 1; cursor: pointer;
+}
+#desktop-win-min   { background: #ffe600; }
+#desktop-win-max   { background: #3ddc73; }
+#desktop-win-close { background: #ff4d4d; color: #fff; }
+
+/* taskbar */
+#desktop-taskbar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 52px;
+  background: #050309; border-top: 3px solid #000;
+  display: flex; align-items: center; padding: 0 10px; gap: 10px; z-index: 800;
+}
+#desktop-start-btn {
+  display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px;
+  border: 2px solid #000; border-radius: 6px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 60%, #fff), var(--accent));
+  box-shadow: 2px 2px 0 rgba(0,0,0,.5); cursor: pointer;
+  font-family: 'Luckiest Guy', cursive; font-size: 14px; color: #fff;
+  -webkit-text-stroke: 1px #000; paint-order: stroke fill;
+}
+#desktop-start-btn svg { animation: bobStart 2s ease-in-out infinite; }
+@keyframes bobStart { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+#desktop-taskbar-page {
+  height: 36px; padding: 0 14px; border: 2px solid var(--accent); border-radius: 6px;
+  background: var(--bg-surface); color: var(--text-primary); font-weight: 700; font-size: 12px; cursor: pointer;
+}
+#desktop-clock {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #e8d9ff;
+  background: #150a28; border: 2px solid #a855ff; border-radius: 4px; padding: 5px 12px;
+}
+
+@media (max-width: 900px) {
+  #app-view.desktop-mode .main-area { left: 12px; width: calc(100% - 24px); top: 12px; }
+  #app-view.desktop-mode .sidebar { width: calc(100% - 24px); }
+}
