@@ -90,6 +90,14 @@ export function openSettingsPanel(settings = {}, email = '') {
         </div>
 
         <div class="sp-section">
+          <div class="sp-section-title">Animazioni</div>
+          <label for="sp-reduce-motion" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:4px;background:var(--bg-input);cursor:pointer;">
+            <input type="checkbox" id="sp-reduce-motion" style="width:16px;height:16px;margin:0;flex-shrink:0;accent-color:var(--accent);">
+            <span style="font-size:13px;font-weight:500;color:var(--text-primary);">Disattiva le animazioni del sito</span>
+          </label>
+        </div>
+
+        <div class="sp-section">
           <div class="sp-section-title">Account</div>
           <div class="sp-account-info">${escapeHtml(email)}</div>
         </div>
@@ -133,6 +141,18 @@ export function openSettingsPanel(settings = {}, email = '') {
 
   container.querySelector('#sp-close').addEventListener('click', closePanel);
   backdrop.addEventListener('click', closePanel);
+
+  const motionCheckbox = container.querySelector('#sp-reduce-motion');
+  motionCheckbox.checked = localStorage.getItem('mkh_reduce_motion') === '1';
+  motionCheckbox.addEventListener('change', () => {
+    if (motionCheckbox.checked) {
+      localStorage.setItem('mkh_reduce_motion', '1');
+      document.documentElement.setAttribute('data-reduce-motion', 'true');
+    } else {
+      localStorage.removeItem('mkh_reduce_motion');
+      document.documentElement.removeAttribute('data-reduce-motion');
+    }
+  });
 
   container.querySelectorAll('.sp-palette-card').forEach(card =>
     card.addEventListener('click', () => {

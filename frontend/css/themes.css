@@ -10,6 +10,16 @@
   src: url('fonts/luckiest-guy.woff2') format('woff2');
 }
 
+/* User-controlled kill switch for every animation/transition in the
+   scrapbook style (Settings → Animazioni). Deliberately blunt — one
+   rule that wins everywhere, rather than chasing every keyframe. */
+[data-reduce-motion="true"] *,
+[data-reduce-motion="true"] *::before,
+[data-reduce-motion="true"] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
 /* Font switching */
 [data-font="inter"]     { --font-editor: 'Inter', system-ui, -apple-system, sans-serif; }
 [data-font="georgia"]   { --font-editor: 'Georgia', serif; }
@@ -253,28 +263,7 @@ body, #auth-view, #app-view {
   96%           { opacity: .7; text-shadow: 0 0 2px #3ddc73; }
 }
 
-/* ── buttons: chunky hard-edge stickers, not glossy pills — but always
-   catching a bit of light, via a constant diagonal shine sweep ── */
-.btn, .bubble-btn, .sidebar-footer-btn, .btn-icon {
-  position: relative;
-  overflow: hidden;
-}
-.btn::after, .bubble-btn::after, .sidebar-footer-btn::after, .btn-icon::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0; left: -60%;
-  width: 40%;
-  background: linear-gradient(115deg, transparent, rgba(255,255,255,.65), transparent);
-  transform: skewX(-20deg);
-  animation: y2kShimmerSweep 2.6s ease-in-out infinite;
-  pointer-events: none;
-}
-.bubble-btn::after, .sidebar-footer-btn::after, .btn-icon::after { animation-duration: 3.2s; }
-@keyframes y2kShimmerSweep {
-  0%, 20%  { left: -60%; }
-  60%, 100% { left: 130%; }
-}
-
+/* ── buttons: chunky hard-edge stickers, not glossy pills ── */
 .btn {
   border-radius: 6px;
   border: 2px solid #000;

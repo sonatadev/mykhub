@@ -22,6 +22,9 @@
   <link rel="stylesheet" href="/css/themes.css" />
   <script>
     try {
+      if (localStorage.getItem('mkh_reduce_motion') === '1') {
+        document.documentElement.setAttribute('data-reduce-motion', 'true');
+      }
       const stored = JSON.parse(localStorage.getItem('mkh_settings') || '{}');
       const bg = stored.bgColor;
       if (stored.theme === 'y2k') {
