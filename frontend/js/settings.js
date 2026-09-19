@@ -5,8 +5,8 @@ const PALETTES = [
   { id: 'ambra',    name: 'Ambra',    bg: '#1d1610', accent: '#f59e0b' },
   { id: 'alba',     name: 'Alba',     bg: '#fafaf8', accent: '#7c6af7' },
   { id: 'carta',    name: 'Carta',    bg: '#f5f0e8', accent: '#c2603a' },
-  { id: 'y2k',      name: 'Y2K',      bg: '#fffdf7', accent: '#ff2fb0', theme: 'y2k',
-    preview: 'linear-gradient(135deg,#00c8ff 0%,#7b2ff7 45%,#ff2fb0 100%)' },
+  { id: 'y2k',      name: 'Y2K',      bg: '#180f28', accent: '#ff2ec4', theme: 'y2k',
+    preview: 'radial-gradient(circle at 25% 25%, #ffe600 0 3px, transparent 4px) 0 0/16px 16px, radial-gradient(circle at 70% 60%, #00e5ff 0 3px, transparent 4px) 0 0/16px 16px, linear-gradient(135deg,#0c0718 0%,#180f28 55%,#2a1040 100%)' },
 ];
 
 let saveCallback = null;

@@ -4,7 +4,7 @@ const { auth } = require('../middleware/auth');
 
 router.use(auth);
 
-const VALID_THEMES  = new Set(['light', 'dark', 'system']);
+const VALID_THEMES  = new Set(['light', 'dark', 'system', 'y2k']);
 const VALID_FONTS   = new Set(['inter', 'georgia', 'jetbrains']);
 const COLOR_RE      = /^#[0-9a-fA-F]{6}$/;
 

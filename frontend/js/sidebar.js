@@ -193,6 +193,7 @@ function buildSpaceItem(space, pages, selectedSpaceId, selectedPageId) {
   container.className = 'space-item';
   if (getExpanded('space', space.id) || space.id === selectedSpaceId) container.classList.add('open');
   container.dataset.spaceId = space.id;
+  container.style.setProperty('--space-color', space.color || 'var(--accent)');
 
   const header = document.createElement('div');
   header.className = 'space-header';

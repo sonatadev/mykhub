@@ -111,6 +111,8 @@ async function refreshSpaces() {
     // Try to restore the last open page
     const lastPageId = parseInt(localStorage.getItem('mkh_last_page'), 10);
     const allPages = Object.values(state.pagesBySpace).flat();
+    const y2kCounter = document.getElementById('y2k-counter');
+    if (y2kCounter) y2kCounter.textContent = String(allPages.length).padStart(6, '0');
     const lastPage = lastPageId && allPages.find(p => p.id === lastPageId);
     if (lastPage) {
       state.selectedSpaceId = lastPage.space_id;

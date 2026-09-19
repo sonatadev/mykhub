@@ -1,3 +1,15 @@
+/* Self-hosted: some ad-blockers/privacy extensions block Google's font
+   CDN (fonts.gstatic.com) specifically, which silently killed this font
+   for at least one real user even though the CSS was otherwise correct.
+   Serving it from our own origin sidesteps that entirely. */
+@font-face {
+  font-family: 'Luckiest Guy';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('fonts/luckiest-guy.woff2') format('woff2');
+}
+
 /* Font switching */
 [data-font="inter"]     { --font-editor: 'Inter', system-ui, -apple-system, sans-serif; }
 [data-font="georgia"]   { --font-editor: 'Georgia', serif; }
@@ -31,127 +43,357 @@
   --bg-canvas:     color-mix(in srgb, #000 10%, var(--bg-primary));
 }
 
-/* ══════════════════════════════════════════════════════════════════════
-   Y2K theme — chrome/glossy Web 2.0 buttons on a pastel desk, readable
-   white "paper" for the actual notes so studying isn't compromised.
-   ══════════════════════════════════════════════════════════════════════ */
+/* Y2K palette — its own dark plum/purple color set, same universal style below */
 [data-theme="y2k"] {
-  --bg-primary:    #fffdf7;
-  --bg-sidebar:    linear-gradient(160deg, #dbeaff 0%, #ffe1f6 55%, #fff6cf 100%);
-  --bg-surface:    #f2ecff;
-  --bg-input:      #ffffff;
-  --text-primary:  #241463;
-  --text-secondary:#5b4b9e;
-  --text-muted:    #9a8fc9;
-  --border:        #b9a6ff;
-  --scrollbar:     linear-gradient(180deg, #00c8ff, #ff2fb0);
-  --bg-canvas:     #dbeaff;
-  --font-ui:       'Baloo 2', 'Trebuchet MS', Verdana, sans-serif;
+  --bg-primary:    #180f28;
+  --bg-sidebar:    #0e0a1f;
+  --bg-surface:    #1c1030;
+  --bg-input:      #150a28;
+  --text-primary:  #efe6ff;
+  --text-secondary:#b6adf0;
+  --text-muted:    #6a5f9c;
+  --border:        #a855ff;
+  --scrollbar:     linear-gradient(180deg, #ff2ec4, #00e5ff);
+  --bg-canvas:     #0c0718;
 }
 
-[data-theme="y2k"] .tiptap-editor pre {
-  background: var(--bg-surface);
+/* ══════════════════════════════════════════════════════════════════════
+   Universal "scrapbook" style — applies to every theme/palette, colored
+   by each one's own --accent (and a fixed rainbow set for the purely
+   decorative bits: confetti, dividers, stickers, which are meant to
+   always be colorful regardless of the base palette). Hard-edged stickers
+   and offset shadows, deliberately NOT smooth or glossy. The note text
+   itself stays a plain, high-contrast panel so studying isn't compromised
+   by the chaos happening around it.
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root { --font-ui: 'Rubik', Verdana, sans-serif; }
+
+body, #auth-view, #app-view {
+  background-color: var(--bg-canvas);
+  background-image:
+    radial-gradient(3px 3px at 6% 10%, #ff2ec4 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 18% 38%, #00e5ff 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 32% 16%, #ffe600 50%, transparent 52%),
+    radial-gradient(3px 3px at 48% 42%, #a855ff 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 64% 12%, #ff2ec4 50%, transparent 52%),
+    radial-gradient(3px 3px at 79% 32%, #00e5ff 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 92% 14%, #ffe600 50%, transparent 52%),
+    radial-gradient(3px 3px at 9% 66%, #a855ff 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 38% 80%, #ff2ec4 50%, transparent 52%),
+    radial-gradient(3px 3px at 61% 90%, #00e5ff 50%, transparent 52%),
+    radial-gradient(2.5px 2.5px at 87% 72%, #ffe600 50%, transparent 52%),
+    repeating-linear-gradient(135deg, var(--bg-canvas) 0 26px, color-mix(in srgb, #fff 8%, var(--bg-canvas)) 26px 52px);
 }
 
-/* Chunky pill "jellybean" buttons with a glossy top highlight */
-[data-theme="y2k"] .btn {
-  position: relative;
-  overflow: hidden;
-  border-radius: 999px;
-  border: 1px solid rgba(36,20,99,0.18);
-  box-shadow: 0 2px 5px rgba(36,20,99,0.22);
-  font-weight: 700;
-}
-[data-theme="y2k"] .btn::before {
-  content: '';
-  position: absolute; inset: 0 0 55% 0;
-  background: linear-gradient(rgba(255,255,255,0.65), rgba(255,255,255,0));
-  pointer-events: none;
-}
-[data-theme="y2k"] .btn-primary { background: linear-gradient(180deg, #ff7bd6, #ff2fb0 60%, #e0189a); color: #fff; }
-[data-theme="y2k"] .btn-ghost   { background: linear-gradient(180deg, #ffffff, #eee6ff); }
-[data-theme="y2k"] .btn-danger  { background: linear-gradient(180deg, #ff9a8b, #ef4444 60%, #d63333); }
-[data-theme="y2k"] .btn-icon:hover { background: var(--bg-surface); }
+.tiptap-editor pre { background: var(--bg-surface); }
 
-[data-theme="y2k"] .form-input {
-  border-radius: 10px;
-  border-width: 2px;
-  box-shadow: inset 0 1px 3px rgba(36,20,99,0.12);
-}
-[data-theme="y2k"] .form-input:focus {
-  box-shadow: inset 0 1px 3px rgba(36,20,99,0.12), 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
-}
-
-/* Sidebar: pastel desk + shimmering rainbow logo */
-[data-theme="y2k"] .sidebar {
-  border-right: 3px solid var(--border);
-  box-shadow: 2px 0 0 #fff, 4px 0 14px rgba(123,47,247,0.15);
-}
-[data-theme="y2k"] .sidebar-logo,
-[data-theme="y2k"] .auth-logo {
-  font-family: 'Baloo 2', sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  background: linear-gradient(90deg, #ff2fb0, #7b2ff7, #00c8ff, #ff2fb0);
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: y2kShimmer 6s linear infinite;
-}
-@keyframes y2kShimmer { to { background-position: 300% 0; } }
-@media (prefers-reduced-motion: reduce) {
-  [data-theme="y2k"] .sidebar-logo,
-  [data-theme="y2k"] .auth-logo { animation: none; }
-}
-
-[data-theme="y2k"] .page-row.active {
-  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 18%, transparent), transparent);
-  border-radius: 6px;
-}
-[data-theme="y2k"] .space-header:hover,
-[data-theme="y2k"] .page-row:hover { border-radius: 6px; }
-
-/* Editor "paper" — a colorful picture-frame border around a plain,
-   readable white page so the actual notes stay easy to read */
-[data-theme="y2k"] .editor-inner {
-  border: 3px solid var(--border);
-  border-bottom: none;
-  border-radius: 14px 14px 0 0;
-  box-shadow: 0 -3px 0 var(--accent), 4px 0 18px rgba(123,47,247,0.18), -4px 0 18px rgba(123,47,247,0.18);
-}
-[data-theme="y2k"] .editor-toolbar {
-  border: 2px solid var(--border);
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffffff, #f2ecff);
-  padding: 6px 10px;
-  top: -20px;
-}
-[data-theme="y2k"] .bubble-btn { border-radius: 999px; }
-[data-theme="y2k"] .bubble-btn.active {
-  background: linear-gradient(180deg, #ff7bd6, #ff2fb0);
+/* ── bubble logo, hard outline + offset shadow, no smooth gradient text ── */
+.sidebar-logo,
+.auth-logo {
+  font-family: 'Luckiest Guy', cursive;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0.01em;
   color: #fff;
+  -webkit-text-stroke: 1.5px #000;
+  paint-order: stroke fill;
+  text-shadow: 2px 2px 0 #000;
+}
+.sidebar-logo { font-size: 19px; }
+.auth-logo    { font-size: 32px; -webkit-text-stroke: 2px #000; text-shadow: 3px 3px 0 #000; }
+
+.y2k-spin-star { display: inline-block; animation: y2kSpin 9s linear infinite; flex-shrink: 0; }
+@keyframes y2kSpin { to { transform: rotate(360deg); } }
+/* This style is an explicit, decorative choice, so its handful of
+   slow/subtle animations don't defer to prefers-reduced-motion. */
+
+/* ── full-width title banner (sits above the sidebar+editor row) ── */
+.y2k-topbanner {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  background: #050309;
+  padding: 10px 26px;
+  border-bottom: 4px dashed #ffe600;
+}
+.y2k-topbanner-left { display: flex; align-items: center; gap: 12px; transform: rotate(-1deg); }
+.y2k-banner-logo {
+  font-family: 'Luckiest Guy', cursive;
+  font-weight: 400;
+  font-size: 30px;
+  color: #fff;
+  -webkit-text-stroke: 2px #000;
+  paint-order: stroke fill;
+  text-shadow: 3px 3px 0 #000;
+}
+.y2k-badge {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  background: var(--accent);
+  color: #fff;
+  padding: 4px 9px;
+  border-radius: 3px;
+  border: 2px solid #000;
+  transform: rotate(6deg);
+  white-space: nowrap;
 }
 
-/* Modals / auth box get a retro "window" title strip */
-[data-theme="y2k"] .modal,
-[data-theme="y2k"] .auth-box,
-[data-theme="y2k"] .share-modal {
-  border: 3px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  padding-top: 44px;
+/* Real save-status chip, relocated from its default bottom-right spot
+   into the banner and restyled as a blinking LCD readout */
+.save-indicator {
+  top: 12px;
+  bottom: auto;
+  right: 26px;
+  left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #000;
+  border: 2px solid #3ddc73;
+  border-radius: 4px;
+  color: #3ddc73;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transform: rotate(1.5deg);
 }
-[data-theme="y2k"] .modal::before,
-[data-theme="y2k"] .auth-box::before,
-[data-theme="y2k"] .share-modal::before {
+.save-indicator.visible { transform: rotate(1.5deg) translateY(0); }
+.save-indicator::before {
   content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 30px;
-  background: linear-gradient(90deg, #ff2fb0, #7b2ff7, #00c8ff);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #3ddc73;
+  box-shadow: 0 0 6px #3ddc73;
+  animation: y2kBlink 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes y2kBlink { 0%, 45% { opacity: 1; } 50%, 100% { opacity: .25; } }
+
+/* ── marquee ticker ── */
+.y2k-ticker {
+  display: block;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #ffe600;
+  border-top: 2px solid #000;
+  border-bottom: 2px solid #000;
+  white-space: nowrap;
+  padding: 3px 0;
+}
+.y2k-ticker-track {
+  display: inline-block;
+  animation: y2kMarquee 14s linear infinite;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a0a33;
+}
+.y2k-ticker-track span { padding: 0 14px; }
+@keyframes y2kMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── hit-counter sticker (real page count) ── */
+.y2k-counter-widget {
+  display: block;
+  margin: 8px 12px;
+  background: #000;
+  border: 2px solid #ffe600;
+  border-radius: 4px;
+  padding: 5px 8px;
+  transform: rotate(1.5deg);
+  flex-shrink: 0;
+}
+.y2k-counter-label {
+  font-size: 8px; font-weight: 700; color: #ffe600; letter-spacing: .1em;
+  text-align: center; margin-bottom: 2px; text-transform: uppercase;
+}
+.y2k-counter-digits {
+  font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700;
+  color: #3ddc73; letter-spacing: .08em; text-align: center; text-shadow: 0 0 6px #3ddc73;
 }
 
-[data-theme="y2k"] .toast { border-radius: 999px; border-width: 2px; font-weight: 600; }
-[data-theme="y2k"] .settings-panel { border-left: 3px solid var(--border); }
-[data-theme="y2k"] .sp-palette-card.selected,
-[data-theme="y2k"] .sp-swatch.selected { border-color: var(--accent); }
+/* ── buttons: chunky hard-edge stickers, not glossy pills ── */
+.btn {
+  border-radius: 6px;
+  border: 2px solid #000;
+  box-shadow: 3px 3px 0 rgba(0,0,0,.5);
+  font-weight: 700;
+}
+.btn:active { box-shadow: 1px 1px 0 rgba(0,0,0,.5); transform: translate(2px, 2px); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-danger  { background: #ff4d4d; color: #fff; }
+.btn-ghost   {
+  background: var(--bg-surface);
+  border-color: var(--accent);
+  color: var(--text-primary);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.btn-icon:hover { background: var(--bg-surface); }
+
+.form-input {
+  border-radius: 6px;
+  border-width: 2px;
+  border-color: var(--accent);
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.4);
+}
+.form-input:focus {
+  box-shadow: inset 0 1px 4px rgba(0,0,0,.4), 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ── sidebar shell ── */
+.sidebar { border-right: 3px solid #000; box-shadow: 3px 0 0 var(--accent); }
+.sidebar-search {
+  border-width: 2px; border-radius: 6px;
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 40%, transparent);
+}
+/* The nested indent guide-line reads as clutter against bordered module
+   cards, and its default position collided visually with the folder
+   toggle chevrons — simplest fix is to drop it, the colored cards
+   already make the hierarchy clear without it. */
+.space-pages::before,
+.page-children::before { display: none; }
+
+/* Each space becomes its own bordered, tilted sticker module. Colored from
+   a fixed rotating rainbow (NOT the space's own saved color) — most real
+   spaces share the same default color, which would make every module
+   look identical instead of the intended scrapbook variety. */
+.space-item {
+  --m: var(--accent);
+  margin: 0 8px 12px;
+  border: 3px solid var(--m);
+  border-radius: 8px;
+  box-shadow: 4px 4px 0 color-mix(in srgb, var(--m) 55%, transparent);
+  overflow: hidden;
+}
+.space-item:nth-of-type(5n+1) { --m: #ff2ec4; transform: rotate(-1.1deg); }
+.space-item:nth-of-type(5n+2) { --m: #00e5ff; transform: rotate(0.9deg); }
+.space-item:nth-of-type(5n+3) { --m: #ffe600; transform: rotate(-0.8deg); }
+.space-item:nth-of-type(5n+4) { --m: #3ddc73; transform: rotate(1deg); }
+.space-item:nth-of-type(5n+5) { --m: #a855ff; transform: rotate(-0.7deg); }
+.space-item:hover { z-index: 2; }
+.space-header { background: var(--m); padding: 8px; }
+.space-header:hover { filter: brightness(1.1); }
+.space-header .space-name { color: #000; font-weight: 800; }
+.space-header .space-toggle { color: #000; opacity: 0.7; }
+.space-header .sidebar-icon { fill: #000 !important; opacity: 1; }
+.space-pages { background: var(--bg-surface); padding: 4px 0; }
+.page-row.active {
+  background: color-mix(in srgb, var(--m, var(--accent)) 25%, transparent);
+  border-left: 3px solid var(--m, var(--accent));
+}
+
+/* Settings button: match the chunky-sticker vibe instead of a plain
+   flat hover-only row */
+.sidebar-footer { border-top: none; padding: 8px; }
+.sidebar-footer-btn {
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  background: var(--bg-surface);
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--accent) 45%, transparent);
+  color: var(--text-primary);
+  font-weight: 700;
+  justify-content: center;
+}
+.sidebar-footer-btn:hover { background: var(--bg-input); color: var(--text-primary); }
+
+/* ── editor "paper": hard sticker frame. No rotation on the writing
+   surface itself, so it stays comfortable to actually type in. ── */
+.editor-inner {
+  position: relative;
+  border: 4px solid var(--accent);
+  border-bottom: none;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 6px 6px 0 rgba(0,0,0,.5);
+}
+/* washi-tape corner (left) */
+.editor-inner::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: 34px;
+  width: 64px;
+  height: 24px;
+  border: 1px solid rgba(0,0,0,.4);
+  opacity: .9;
+  z-index: 3;
+  background: repeating-linear-gradient(45deg, #ffe600 0 6px, #a89400 6px 12px);
+  transform: rotate(-8deg);
+}
+/* star sticker overlapping the top-right corner */
+.editor-inner::after {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 44px;
+  height: 44px;
+  z-index: 3;
+  background: #ffe600;
+  border: 1px solid #000;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  transform: rotate(12deg);
+}
+.editor-divider {
+  height: 6px;
+  border-radius: 3px;
+  background: repeating-linear-gradient(90deg, #ff2ec4 0 16px, #ffe600 16px 32px, #00e5ff 32px 48px, #3ddc73 48px 64px);
+}
+.editor-toolbar {
+  border: 2px solid var(--accent);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  gap: 4px;
+  top: 10px;
+}
+
+/* Wide screens: float the toolbar as a vertical rail in the empty margin
+   beside the paper instead of a horizontal bar stuck to the top, and
+   compensate the paper's centering for the rail's own footprint so the
+   sheet doesn't look shoved off to one side. */
+@media (min-width: 1300px) {
+  .editor-wrapper { padding-right: 140px; }
+  .editor-toolbar {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 28px;
+    left: auto;
+    flex-direction: column;
+    width: 46px;
+    padding: 8px 6px;
+    gap: 6px;
+    margin: 0;
+  }
+  .editor-toolbar .bubble-btn {
+    width: 100%;
+    height: 30px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+  .bubble-sep { width: 24px; height: 2px; margin: 2px 0; align-self: center; }
+}
+.bubble-btn {
+  border: 2px solid var(--accent);
+  border-radius: 5px;
+  background: var(--bg-input);
+  box-shadow: 2px 2px 0 color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.bubble-btn.active { background: var(--accent); color: #fff; border-color: #000; }
+
+/* ── modals / auth box ── */
+.modal,
+.auth-box,
+.share-modal {
+  border: 4px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 6px 6px 0 rgba(0,0,0,.5);
+}
+
+.toast { border-width: 2px; border-radius: 6px; font-weight: 600; box-shadow: 3px 3px 0 rgba(0,0,0,.5); }
+.settings-panel { border-left: 3px solid var(--accent); }
+.sp-palette-card.selected,
+.sp-swatch.selected { border-color: var(--accent); }
