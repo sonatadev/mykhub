@@ -43,6 +43,14 @@
       document.documentElement.dataset.font = stored.font || 'inter';
       if (stored.accent) document.documentElement.style.setProperty('--accent', stored.accent);
       if (bg) document.documentElement.style.setProperty('--bg-primary', bg);
+      var PALETTE_LOOKUP = [
+        ['obsidian', '#1e1e1e', '#7c6af7'], ['oceano', '#071a2e', '#38bdf8'],
+        ['foresta', '#141f14', '#7bc47f'], ['ambra', '#1d1610', '#f59e0b'],
+        ['alba', '#fafaf8', '#7c6af7'], ['carta', '#f5f0e8', '#c2603a'],
+        ['y2k', '#180f28', '#ff2ec4']
+      ];
+      var match = PALETTE_LOOKUP.find(function (p) { return p[1] === bg && p[2] === stored.accent; });
+      document.documentElement.dataset.palette = match ? match[0] : 'obsidian';
     } catch (error) {}
   </script>
 </head>

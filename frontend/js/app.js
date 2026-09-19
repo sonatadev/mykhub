@@ -2,7 +2,7 @@ import { api } from './api.js';
 import { initAuth } from './auth.js';
 import { initSidebar, renderSidebar, openMobileSidebar } from './sidebar.js';
 import { initEditor, openPageInEditor, closePageEditor, clearEditor, focusEditor } from './editor.js';
-import { initSettings, openSettingsPanel } from './settings.js';
+import { initSettings, openSettingsPanel, findPaletteId } from './settings.js';
 import { showToast, showPrompt, showContextMenu } from './ui.js';
 
 const authView = document.getElementById('auth-view');
@@ -81,6 +81,7 @@ function applyTheme(settings = {}) {
     document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
   }
   document.documentElement.dataset.font = font;
+  document.documentElement.dataset.palette = findPaletteId({ bgColor, accent });
   document.documentElement.style.setProperty('--accent', accent);
   if (bgColor) {
     document.documentElement.style.setProperty('--bg-primary', bgColor);
@@ -189,7 +190,8 @@ async function selectPage(pageId) {
       bc.innerHTML = parts.map(p => `<span>${escapeHtml(p)}</span>`).join('<span class="editor-breadcrumb-sep"> › </span>');
     }
     showEditor();
-    openPageInEditor(page.id, page.content || { type: 'doc', content: [] }, page.ydoc_state || null);
+    const initialContent = page.content?.type ? page.content : { type: 'doc', content: [] };
+    openPageInEditor(page.id, initialContent, page.ydoc_state || null);
     focusEditor();
   } catch (error) {
     showToast(error.message, 'error');

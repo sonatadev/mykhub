@@ -1,4 +1,4 @@
-const PALETTES = [
+export const PALETTES = [
   { id: 'obsidian', name: 'Obsidian', bg: '#1e1e1e', accent: '#7c6af7' },
   { id: 'oceano',   name: 'Oceano',   bg: '#071a2e', accent: '#38bdf8' },
   { id: 'foresta',  name: 'Foresta',  bg: '#141f14', accent: '#7bc47f' },
@@ -247,7 +247,7 @@ export function openSettingsPanel(settings = {}, email = '') {
   });
 }
 
-function findPaletteId(settings) {
+export function findPaletteId(settings) {
   const match = PALETTES.find(p => p.bg === settings.bgColor && p.accent === settings.accent);
   return match?.id || 'obsidian';
 }
