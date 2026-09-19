@@ -253,7 +253,28 @@ body, #auth-view, #app-view {
   96%           { opacity: .7; text-shadow: 0 0 2px #3ddc73; }
 }
 
-/* ── buttons: chunky hard-edge stickers, not glossy pills ── */
+/* ── buttons: chunky hard-edge stickers, not glossy pills — but always
+   catching a bit of light, via a constant diagonal shine sweep ── */
+.btn, .bubble-btn, .sidebar-footer-btn, .btn-icon {
+  position: relative;
+  overflow: hidden;
+}
+.btn::after, .bubble-btn::after, .sidebar-footer-btn::after, .btn-icon::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: -60%;
+  width: 40%;
+  background: linear-gradient(115deg, transparent, rgba(255,255,255,.65), transparent);
+  transform: skewX(-20deg);
+  animation: y2kShimmerSweep 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.bubble-btn::after, .sidebar-footer-btn::after, .btn-icon::after { animation-duration: 3.2s; }
+@keyframes y2kShimmerSweep {
+  0%, 20%  { left: -60%; }
+  60%, 100% { left: 130%; }
+}
+
 .btn {
   border-radius: 6px;
   border: 2px solid #000;
@@ -264,24 +285,9 @@ body, #auth-view, #app-view {
 .btn:hover:not(:disabled) { transform: translate(-1px, -1px) rotate(-1deg); box-shadow: 4px 4px 0 rgba(0,0,0,.5); }
 .btn:active { box-shadow: 1px 1px 0 rgba(0,0,0,.5); transform: translate(2px, 2px); }
 .btn-primary {
-  position: relative;
-  overflow: hidden;
   background: var(--accent);
   color: #fff;
   animation: y2kGlow 2s ease-in-out infinite;
-}
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0; left: -60%;
-  width: 40%;
-  background: linear-gradient(115deg, transparent, rgba(255,255,255,.55), transparent);
-  transform: skewX(-20deg);
-  animation: y2kShimmerSweep 3s ease-in-out infinite;
-}
-@keyframes y2kShimmerSweep {
-  0%, 30%  { left: -60%; }
-  70%, 100% { left: 130%; }
 }
 @keyframes y2kGlow {
   0%, 100% { box-shadow: 3px 3px 0 rgba(0,0,0,.5), 0 0 0 rgba(0,0,0,0); }
