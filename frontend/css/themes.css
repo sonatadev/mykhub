@@ -223,6 +223,13 @@ body, #auth-view, #app-view {
 .y2k-counter-digits {
   font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700;
   color: #3ddc73; letter-spacing: .08em; text-align: center; text-shadow: 0 0 6px #3ddc73;
+  animation: y2kCrtFlicker 3.2s linear infinite;
+}
+@keyframes y2kCrtFlicker {
+  0%, 92%, 100% { opacity: 1; text-shadow: 0 0 6px #3ddc73; }
+  93%           { opacity: .82; text-shadow: 0 0 2px #3ddc73; }
+  95%           { opacity: 1; text-shadow: 0 0 9px #3ddc73; }
+  96%           { opacity: .7; text-shadow: 0 0 2px #3ddc73; }
 }
 
 /* ── buttons: chunky hard-edge stickers, not glossy pills ── */
@@ -236,9 +243,24 @@ body, #auth-view, #app-view {
 .btn:hover:not(:disabled) { transform: translate(-1px, -1px) rotate(-1deg); box-shadow: 4px 4px 0 rgba(0,0,0,.5); }
 .btn:active { box-shadow: 1px 1px 0 rgba(0,0,0,.5); transform: translate(2px, 2px); }
 .btn-primary {
+  position: relative;
+  overflow: hidden;
   background: var(--accent);
   color: #fff;
   animation: y2kGlow 2s ease-in-out infinite;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0; left: -60%;
+  width: 40%;
+  background: linear-gradient(115deg, transparent, rgba(255,255,255,.55), transparent);
+  transform: skewX(-20deg);
+  animation: y2kShimmerSweep 3s ease-in-out infinite;
+}
+@keyframes y2kShimmerSweep {
+  0%, 30%  { left: -60%; }
+  70%, 100% { left: 130%; }
 }
 @keyframes y2kGlow {
   0%, 100% { box-shadow: 3px 3px 0 rgba(0,0,0,.5), 0 0 0 rgba(0,0,0,0); }
@@ -322,6 +344,13 @@ body, #auth-view, #app-view {
 .page-row.active {
   background: color-mix(in srgb, var(--m, var(--accent)) 25%, transparent);
   border-left: 3px solid var(--m, var(--accent));
+}
+.page-row { transition: background .12s ease, padding-left .12s ease; }
+.page-row:hover { padding-left: 4px; }
+.page-row:hover .sidebar-icon { animation: y2kIconBounce .5s ease; }
+@keyframes y2kIconBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40%      { transform: translateY(-3px) scale(1.15); }
 }
 
 /* Settings button: match the chunky-sticker vibe instead of a plain
@@ -457,6 +486,26 @@ body, #auth-view, #app-view {
   to   { opacity: 1; transform: scale(1) rotate(0deg); }
 }
 
+/* ── empty state: an actual illustration instead of a bare icon slot ── */
+.empty-icon {
+  display: block !important;
+  margin-bottom: 6px;
+  filter: drop-shadow(4px 4px 0 rgba(0,0,0,.35));
+}
+.empty-icon-note  { animation: y2kNoteSway 4.2s ease-in-out infinite; transform-origin: 40px 66px; }
+.empty-icon-note2 { animation: y2kNoteSway 4.6s ease-in-out infinite reverse; transform-origin: 78px 70px; }
+.empty-icon-star  { animation: y2kSpin 6s linear infinite; transform-origin: 90px 30px; }
+@keyframes y2kNoteSway {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50%      { transform: rotate(-1deg) translateY(-4px); }
+}
+.empty-state p {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-secondary);
+}
+
 .toast {
   border-width: 2px; border-radius: 6px; font-weight: 600; box-shadow: 3px 3px 0 rgba(0,0,0,.5);
   animation: y2kToastIn .3s cubic-bezier(.34,1.56,.64,1);
@@ -465,7 +514,7 @@ body, #auth-view, #app-view {
   from { opacity: 0; transform: translateY(16px) scale(.9); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.settings-panel { border-left: 3px solid var(--accent); }
+.settings-panel { border-left: 4px solid var(--accent); box-shadow: -6px 0 0 rgba(0,0,0,.35), -6px 0 24px rgba(0,0,0,.35); }
 .sp-palette-card.selected,
 .sp-swatch.selected { border-color: var(--accent); }
 .sp-font-option {

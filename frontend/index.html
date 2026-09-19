@@ -141,8 +141,26 @@
 
       <div id="editor-area" style="flex:1; min-height:0; overflow:hidden; display:flex; flex-direction:column;">
         <div class="empty-state" id="empty-state">
-          <div class="empty-icon"></div>
-          <p>Seleziona una pagina dalla sidebar o creane una nuova</p>
+          <div class="empty-icon">
+            <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+              <g class="empty-icon-note" transform="rotate(-6 40 66)">
+                <rect x="14" y="42" width="52" height="48" rx="4" fill="#ffe600" stroke="#000" stroke-width="2"/>
+                <line x1="22" y1="56" x2="58" y2="56" stroke="#000" stroke-width="2" opacity=".5"/>
+                <line x1="22" y1="65" x2="58" y2="65" stroke="#000" stroke-width="2" opacity=".5"/>
+                <line x1="22" y1="74" x2="46" y2="74" stroke="#000" stroke-width="2" opacity=".5"/>
+              </g>
+              <g class="empty-icon-note2" transform="rotate(8 78 70)">
+                <rect x="52" y="50" width="52" height="48" rx="4" fill="#ff2ec4" stroke="#000" stroke-width="2"/>
+                <line x1="60" y1="64" x2="96" y2="64" stroke="#000" stroke-width="2" opacity=".5"/>
+                <line x1="60" y1="73" x2="96" y2="73" stroke="#000" stroke-width="2" opacity=".5"/>
+                <line x1="60" y1="82" x2="84" y2="82" stroke="#000" stroke-width="2" opacity=".5"/>
+              </g>
+              <g class="empty-icon-star" transform="translate(78 18)">
+                <path d="M12 0l3.2 8.8L24 12l-8.8 3.2L12 24l-3.2-8.8L0 12l8.8-3.2z" fill="#00e5ff" stroke="#000" stroke-width="1.5"/>
+              </g>
+            </svg>
+          </div>
+          <p>Seleziona una pagina dalla sidebar o creane una nuova ✧</p>
         </div>
 
         <div class="editor-wrapper hidden" id="editor-wrapper">
