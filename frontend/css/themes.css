@@ -84,7 +84,9 @@ body, #auth-view, #app-view {
     radial-gradient(3px 3px at 61% 90%, #00e5ff 50%, transparent 52%),
     radial-gradient(2.5px 2.5px at 87% 72%, #ffe600 50%, transparent 52%),
     repeating-linear-gradient(135deg, var(--bg-canvas) 0 26px, color-mix(in srgb, #fff 8%, var(--bg-canvas)) 26px 52px);
+  animation: y2kDrift 50s linear infinite;
 }
+@keyframes y2kDrift { from { background-position: 0 0; } to { background-position: -520px 520px; } }
 
 .tiptap-editor pre { background: var(--bg-surface); }
 
@@ -233,7 +235,16 @@ body, #auth-view, #app-view {
 }
 .btn:hover:not(:disabled) { transform: translate(-1px, -1px) rotate(-1deg); box-shadow: 4px 4px 0 rgba(0,0,0,.5); }
 .btn:active { box-shadow: 1px 1px 0 rgba(0,0,0,.5); transform: translate(2px, 2px); }
-.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  animation: y2kGlow 2s ease-in-out infinite;
+}
+@keyframes y2kGlow {
+  0%, 100% { box-shadow: 3px 3px 0 rgba(0,0,0,.5), 0 0 0 rgba(0,0,0,0); }
+  50%      { box-shadow: 3px 3px 0 rgba(0,0,0,.5), 0 0 14px color-mix(in srgb, var(--accent) 70%, transparent); }
+}
+.btn-primary:hover { animation-play-state: paused; }
 .btn-danger  { background: #ff4d4d; color: #fff; }
 .btn-ghost   {
   background: var(--bg-surface);
@@ -274,24 +285,33 @@ body, #auth-view, #app-view {
    look identical instead of the intended scrapbook variety. */
 .space-item {
   --m: var(--accent);
+  --base-rot: 0deg;
   margin: 0 8px 12px;
   border: 3px solid var(--m);
   border-radius: 8px;
   box-shadow: 4px 4px 0 color-mix(in srgb, var(--m) 55%, transparent);
   overflow: hidden;
+  animation: y2kSway 5s ease-in-out infinite;
+  animation-delay: calc(var(--sway-delay, 0) * 1s);
 }
-.space-item:nth-of-type(5n+1) { --m: #ff2ec4; transform: rotate(-1.1deg); }
-.space-item:nth-of-type(5n+2) { --m: #00e5ff; transform: rotate(0.9deg); }
-.space-item:nth-of-type(5n+3) { --m: #ffe600; transform: rotate(-0.8deg); }
-.space-item:nth-of-type(5n+4) { --m: #3ddc73; transform: rotate(1deg); }
-.space-item:nth-of-type(5n+5) { --m: #a855ff; transform: rotate(-0.7deg); }
+.space-item:nth-of-type(5n+1) { --m: #ff2ec4; --base-rot: -1.4deg; --sway-delay: 0; }
+.space-item:nth-of-type(5n+2) { --m: #00e5ff; --base-rot: 1.2deg;  --sway-delay: .4; }
+.space-item:nth-of-type(5n+3) { --m: #ffe600; --base-rot: -1deg;   --sway-delay: .8; }
+.space-item:nth-of-type(5n+4) { --m: #3ddc73; --base-rot: 1.3deg;  --sway-delay: 1.2; }
+.space-item:nth-of-type(5n+5) { --m: #a855ff; --base-rot: -0.9deg; --sway-delay: 1.6; }
+@keyframes y2kSway {
+  0%, 100% { transform: rotate(var(--base-rot)); }
+  50%      { transform: rotate(calc(var(--base-rot) * -1)); }
+}
 .space-item {
-  transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
+  transition: box-shadow .18s ease;
 }
 .space-item:hover {
   z-index: 2;
-  transform: scale(1.02) rotate(0deg) translateY(-2px);
+  animation-play-state: paused;
+  transform: scale(1.03) rotate(0deg) translateY(-2px) !important;
   box-shadow: 6px 6px 0 color-mix(in srgb, var(--m) 55%, transparent);
+  transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease;
 }
 .space-header { background: var(--m); padding: 8px; }
 .space-header:hover { filter: brightness(1.1); }
@@ -345,7 +365,12 @@ body, #auth-view, #app-view {
   opacity: .9;
   z-index: 3;
   background: repeating-linear-gradient(45deg, #ffe600 0 6px, #a89400 6px 12px);
-  transform: rotate(-8deg);
+  --tape-scale: 1;
+  animation: y2kTapeWobble 4.5s ease-in-out infinite;
+}
+@keyframes y2kTapeWobble {
+  0%, 100% { transform: scale(var(--tape-scale)) rotate(-8deg); }
+  50%      { transform: scale(var(--tape-scale)) rotate(-4deg); }
 }
 /* star sticker overlapping the top-right corner */
 .editor-inner::after {
@@ -359,11 +384,12 @@ body, #auth-view, #app-view {
   background: #ffe600;
   border: 1px solid #000;
   clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  --star-scale: 1;
   animation: y2kStarPulse 2.4s ease-in-out infinite;
 }
 @keyframes y2kStarPulse {
-  0%, 100% { transform: rotate(12deg) scale(1); }
-  50%      { transform: rotate(18deg) scale(1.08); }
+  0%, 100% { transform: scale(var(--star-scale)) rotate(12deg) scale(1); }
+  50%      { transform: scale(var(--star-scale)) rotate(18deg) scale(1.08); }
 }
 .editor-divider {
   height: 6px;
@@ -467,6 +493,6 @@ body, #auth-view, #app-view {
   .y2k-banner-logo { font-size: 20px; }
   .y2k-badge { display: none; }
   .save-indicator { font-size: 10px; right: 14px; }
-  .editor-inner::before { transform: scale(0.7) rotate(-8deg); }
-  .editor-inner::after  { transform: scale(0.7) rotate(12deg); }
+  .editor-inner::before { --tape-scale: 0.7; }
+  .editor-inner::after  { --star-scale: 0.7; }
 }
