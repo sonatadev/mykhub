@@ -1,18 +1,27 @@
 const router = require('express').Router();
 const { auth } = require('../middleware/auth');
 const multer = require('multer');
-const path = require('path');
 const crypto = require('crypto');
 const fs = require('fs');
 
 const UPLOAD_DIR = process.env.UPLOAD_DIR || '/app/uploads';
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
+// Extension is derived from the (server-checked) mimetype, never from the
+// client-supplied filename/content-type pair — this also excludes SVG,
+// which browsers can execute as a script when opened directly, unlike the
+// raster formats below.
+const MIME_EXT = {
+  'image/jpeg': '.jpg',
+  'image/png':  '.png',
+  'image/gif':  '.gif',
+  'image/webp': '.webp',
+};
+
 const storage = multer.diskStorage({
   destination: UPLOAD_DIR,
   filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase() || '.bin';
-    cb(null, crypto.randomBytes(16).toString('hex') + ext);
+    cb(null, crypto.randomBytes(16).toString('hex') + MIME_EXT[file.mimetype]);
   },
 });
 
@@ -20,7 +29,7 @@ const upload = multer({
   storage,
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    if (!file.mimetype.startsWith('image/')) return cb(new Error('Solo immagini'));
+    if (!MIME_EXT[file.mimetype]) return cb(new Error('Formato non supportato (jpg, png, gif, webp)'));
     cb(null, true);
   },
 });
