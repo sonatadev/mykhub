@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 96%;
+    --foreground: 252 9% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 252 9% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 252 9% 11%;
+
+    --primary: 176 33% 27%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 40 14% 93%;
+    --secondary-foreground: 252 9% 11%;
+
+    --muted: 40 14% 93%;
+    --muted-foreground: 256 6% 35%;
+
+    --accent: 176 30% 92%;
+    --accent-foreground: 176 40% 18%;
+
+    --destructive: 8 59% 44%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 145 46% 34%;
+    --warning: 35 90% 38%;
+
+    --border: 47 13% 86%;
+    --input: 47 13% 86%;
+    --ring: 176 33% 40%;
+
+    --sidebar: 40 18% 95%;
+    --sidebar-foreground: 252 9% 11%;
+    --sidebar-border: 47 13% 86%;
+
+    --radius: 0.625rem;
+
+    /* Fixed presence palette (id % 8) — never themed */
+    --presence-0: #e4572e;
+    --presence-1: #c48a1e;
+    --presence-2: #4c9f70;
+    --presence-3: #3b82c4;
+    --presence-4: #7c6fd1;
+    --presence-5: #c4508a;
+    --presence-6: #3b9f98;
+    --presence-7: #8a8635;
+  }
+
+  .dark {
+    --background: 220 6% 10%;
+    --foreground: 48 12% 92%;
+
+    --card: 210 6% 13%;
+    --card-foreground: 48 12% 92%;
+    --popover: 210 6% 13%;
+    --popover-foreground: 48 12% 92%;
+
+    --primary: 171 33% 59%;
+    --primary-foreground: 176 40% 12%;
+
+    --secondary: 210 6% 18%;
+    --secondary-foreground: 48 12% 92%;
+
+    --muted: 210 6% 18%;
+    --muted-foreground: 270 4% 68%;
+
+    --accent: 176 20% 20%;
+    --accent-foreground: 171 33% 85%;
+
+    --destructive: 11 69% 66%;
+    --destructive-foreground: 0 0% 10%;
+
+    --success: 145 39% 53%;
+    --warning: 36 68% 58%;
+
+    --border: 204 5% 18%;
+    --input: 204 5% 18%;
+    --ring: 171 33% 55%;
+
+    --sidebar: 220 7% 12%;
+    --sidebar-foreground: 48 12% 92%;
+    --sidebar-border: 204 5% 18%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ---------- Editor content typography ---------- */
+.editor-content {
+  font-family: theme('fontFamily.sans');
+}
+[data-font='georgia'] .editor-content {
+  font-family: theme('fontFamily.serif');
+}
+[data-font='jetbrains'] .editor-content {
+  font-family: theme('fontFamily.mono');
+}
+
+.ProseMirror {
+  outline: none;
+  min-height: 60vh;
+}
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  @apply text-muted-foreground;
+}
+.ProseMirror h1 {
+  @apply text-3xl font-semibold mt-8 mb-3 tracking-tight;
+}
+.ProseMirror h2 {
+  @apply text-xl font-semibold mt-6 mb-2 tracking-tight;
+}
+.ProseMirror p {
+  @apply my-3 leading-7;
+}
+.ProseMirror ul {
+  @apply list-disc pl-6 my-3;
+}
+.ProseMirror ol {
+  @apply list-decimal pl-6 my-3;
+}
+.ProseMirror li {
+  @apply my-1;
+}
+.ProseMirror a {
+  @apply text-primary underline underline-offset-2;
+}
+.ProseMirror blockquote {
+  @apply border-l-2 border-primary pl-4 italic text-muted-foreground my-3;
+}
+.ProseMirror code {
+  @apply bg-muted px-1.5 py-0.5 rounded text-[0.85em] font-mono;
+}
+.ProseMirror pre {
+  @apply bg-muted rounded-md p-3 my-3 overflow-x-auto;
+}
+.ProseMirror pre code {
+  @apply bg-transparent p-0;
+}
+.ProseMirror hr {
+  @apply border-border my-6;
+}
+.ProseMirror ul[data-type='taskList'] {
+  @apply list-none pl-0;
+}
+.ProseMirror ul[data-type='taskList'] li {
+  @apply flex items-start gap-2;
+}
+.ProseMirror ul[data-type='taskList'] li > label {
+  @apply mt-1;
+}
+.ProseMirror ul[data-type='taskList'] li > div {
+  @apply flex-1;
+}
+.ProseMirror table {
+  @apply border-collapse my-4 w-full;
+}
+.ProseMirror th,
+.ProseMirror td {
+  @apply border border-border px-3 py-2 text-left align-top;
+}
+.ProseMirror th {
+  @apply bg-muted font-semibold;
+}
+.ProseMirror img {
+  @apply max-w-full rounded-md my-3;
+}
+.ProseMirror img.ProseMirror-selectednode {
+  outline: 2px solid hsl(var(--ring));
+}
+.ProseMirror .image-align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ProseMirror .image-align-right {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+/* Remote collaborator cursors (Yjs CollaborationCursor) */
+.collaboration-cursor__caret {
+  border-left: 2px solid;
+  border-right: 2px solid;
+  margin-left: -1px;
+  margin-right: -1px;
+  pointer-events: none;
+  position: relative;
+  word-break: normal;
+}
+.collaboration-cursor__label {
+  border-radius: 4px 4px 4px 0;
+  font-size: 11px;
+  font-weight: 600;
+  left: -1px;
+  padding: 1px 6px;
+  position: absolute;
+  top: -1.3em;
+  user-select: none;
+  white-space: nowrap;
+  color: #fff;
+}
