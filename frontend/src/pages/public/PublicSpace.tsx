@@ -114,18 +114,20 @@ export default function PublicSpace() {
         </SheetContent>
       </Sheet>
 
-      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto">
+      <div className="flex min-w-0 flex-1 flex-col overflow-y-auto bg-muted/40">
         <div className="flex h-12 shrink-0 items-center border-b border-border px-3 md:hidden">
           <Button variant="ghost" size="icon" aria-label="Apri l'indice" onClick={() => setDrawerOpen(true)}>
             <Menu className="h-4 w-4" />
           </Button>
         </div>
         {activePage ? (
-          <div className="mx-auto w-full max-w-[720px] px-6 py-12">
-            <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight">
-              <IconGlyph value={activePage.icon} kind="page" className="h-7 w-7" /> {activePage.title}
-            </h1>
-            <ReadOnlyContent content={activePage.content} />
+          <div className="mx-auto w-full max-w-[720px] px-4 py-8 sm:px-6 sm:py-12">
+            <div className="rounded-2xl border border-border bg-card px-6 py-10 shadow-sm sm:px-14">
+              <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight">
+                <IconGlyph value={activePage.icon} kind="page" className="h-7 w-7" /> {activePage.title}
+              </h1>
+              <ReadOnlyContent content={activePage.content} />
+            </div>
           </div>
         ) : (
           <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">

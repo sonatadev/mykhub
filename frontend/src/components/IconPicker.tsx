@@ -62,7 +62,7 @@ export function ColorField({ value, onChange }: { value: string; onChange: (hex:
     <div className="flex items-center gap-2">
       <input
         type="color"
-        value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : '#2F5D5A'}
+        value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : '#6B4226'}
         onChange={(e) => {
           onChange(e.target.value);
           setText(e.target.value);
@@ -74,7 +74,7 @@ export function ColorField({ value, onChange }: { value: string; onChange: (hex:
         onChange={(e) => setText(e.target.value)}
         onBlur={() => /^#[0-9a-fA-F]{6}$/.test(text) && onChange(text)}
         className="w-28 font-mono text-xs"
-        placeholder="#2F5D5A"
+        placeholder="#6B4226"
       />
     </div>
   );

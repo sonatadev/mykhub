@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Menu, Plus } from 'lucide-react';
+import { Menu, FilePlus2, FolderPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWorkspaceStore } from '@/lib/store/workspace';
 import { useUiStore } from '@/lib/store/ui';
@@ -29,8 +29,13 @@ export default function SpaceHome() {
     if (roots.length > 0) navigate(`/space/${id}/page/${roots[0].id}`, { replace: true });
   }, [pages, id, navigate]);
 
-  async function addPage() {
-    const created = await createPage(id, null, 'Senza titolo');
+  async function addPage(kind: 'folder' | 'note') {
+    const created = await createPage(
+      id,
+      null,
+      kind === 'folder' ? 'Nuova cartella' : 'Senza titolo',
+      kind === 'folder' ? 'folder' : undefined
+    );
     navigate(`/space/${id}/page/${created.id}`);
   }
 
@@ -62,9 +67,14 @@ export default function SpaceHome() {
       </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">
         <p className="text-sm text-muted-foreground">Questo spazio non ha ancora pagine.</p>
-        <Button onClick={addPage}>
-          <Plus className="h-4 w-4" /> Nuova pagina
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => addPage('folder')}>
+            <FolderPlus className="h-4 w-4" /> Nuova cartella
+          </Button>
+          <Button onClick={() => addPage('note')}>
+            <FilePlus2 className="h-4 w-4" /> Nuova nota
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -3,8 +3,8 @@
   "short_name": "mykhub",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F6F5F2",
-  "theme_color": "#2F5D5A",
+  "background_color": "#F2E9D8",
+  "theme_color": "#6B4226",
   "icons": [
     { "src": "/icon-32.png", "sizes": "32x32", "type": "image/png" },
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },

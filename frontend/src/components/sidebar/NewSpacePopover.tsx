@@ -16,7 +16,7 @@ export default function NewSpacePopover() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [icon, setIcon] = useState(DEFAULT_SPACE_ICON);
-  const [color, setColor] = useState('#6366f1');
+  const [color, setColor] = useState('#6B4226');
   const [creating, setCreating] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -28,7 +28,7 @@ export default function NewSpacePopover() {
       setOpen(false);
       setName('');
       setIcon(DEFAULT_SPACE_ICON);
-      setColor('#6366f1');
+      setColor('#6B4226');
       navigate(`/space/${space.id}`);
     } catch {
       toast.error('Impossibile creare lo spazio');

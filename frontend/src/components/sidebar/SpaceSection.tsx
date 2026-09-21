@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronRight, MoreHorizontal, Plus, Settings, Users } from 'lucide-react';
+import { ChevronRight, FilePlus2, FolderPlus, MoreHorizontal, Settings, Users } from 'lucide-react';
 import type { Space } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { useWorkspaceStore } from '@/lib/store/workspace';
@@ -85,9 +85,14 @@ export default function SpaceSection({
     }
   }
 
-  async function addRootPage() {
+  async function addRootPage(kind: 'folder' | 'note') {
     setOpen(true);
-    const created = await createPage(space.id, null, 'Senza titolo');
+    const created = await createPage(
+      space.id,
+      null,
+      kind === 'folder' ? 'Nuova cartella' : 'Senza titolo',
+      kind === 'folder' ? 'folder' : undefined
+    );
     navigate(`/space/${space.id}/page/${created.id}`);
   }
 
@@ -124,11 +129,21 @@ export default function SpaceSection({
             className="flex h-5 w-5 items-center justify-center rounded hover:bg-background"
             onClick={(e) => {
               e.stopPropagation();
-              addRootPage();
+              addRootPage('folder');
             }}
-            aria-label="Nuova pagina"
+            aria-label="Nuova cartella"
           >
-            <Plus className="h-3.5 w-3.5" />
+            <FolderPlus className="h-3.5 w-3.5" />
+          </button>
+          <button
+            className="flex h-5 w-5 items-center justify-center rounded hover:bg-background"
+            onClick={(e) => {
+              e.stopPropagation();
+              addRootPage('note');
+            }}
+            aria-label="Nuova nota"
+          >
+            <FilePlus2 className="h-3.5 w-3.5" />
           </button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -176,12 +191,20 @@ export default function SpaceSection({
             />
           ))}
           {pages && rootPages.length === 0 && (
-            <button
-              onClick={addRootPage}
-              className="ml-6 flex items-center gap-1.5 py-1 text-xs text-muted-foreground hover:text-foreground"
-            >
-              <Plus className="h-3 w-3" /> Nuova pagina
-            </button>
+            <div className="ml-6 flex items-center gap-3 py-1">
+              <button
+                onClick={() => addRootPage('folder')}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <FolderPlus className="h-3 w-3" /> Nuova cartella
+              </button>
+              <button
+                onClick={() => addRootPage('note')}
+                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <FilePlus2 className="h-3 w-3" /> Nuova nota
+              </button>
+            </div>
           )}
         </div>
       )}

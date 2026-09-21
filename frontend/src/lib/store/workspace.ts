@@ -18,7 +18,12 @@ interface WorkspaceState {
   removeSpaceLocal: (id: number) => void;
   reorderSpaces: (order: Array<{ id: number; order_index: number }>) => Promise<void>;
 
-  createPage: (spaceId: number, parentPageId: number | null, title?: string) => Promise<PageSummary>;
+  createPage: (
+    spaceId: number,
+    parentPageId: number | null,
+    title?: string,
+    icon?: string
+  ) => Promise<PageSummary>;
   patchPageLocal: (spaceId: number, pageId: number, patch: Partial<PageSummary>) => void;
   deletePage: (spaceId: number, pageId: number) => Promise<void>;
   movePage: (
@@ -88,12 +93,12 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     await spacesApi.reorder(order);
   },
 
-  createPage: async (spaceId, parentPageId, title) => {
+  createPage: async (spaceId, parentPageId, title, icon) => {
     const page = await pagesApi.create({
       space_id: spaceId,
       parent_page_id: parentPageId,
       title,
-      icon: DEFAULT_PAGE_ICON,
+      icon: icon ?? DEFAULT_PAGE_ICON,
     });
     set((s) => ({
       pagesBySpace: { ...s.pagesBySpace, [spaceId]: [...(s.pagesBySpace[spaceId] || []), page] },

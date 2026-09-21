@@ -6,12 +6,12 @@ import type { Theme, UserSettings } from './types';
 // applying the light-mode hex verbatim in dark mode reads as low-contrast
 // mud, so the two are never interchanged.
 export const ACCENT_PRESETS = [
-  { label: 'Teal (default)', value: '#2F5D5A', dark: '#74B9AF' },
-  { label: 'Indaco', value: '#4F46E5', dark: '#8B85F0' },
-  { label: 'Rosso mattone', value: '#B4402E', dark: '#E4816C' },
+  { label: 'Caffè (default)', value: '#6B4226', dark: '#C89B6E' },
+  { label: 'Terracotta', value: '#C1502E', dark: '#E08A63' },
   { label: 'Ambra', value: '#B9700A', dark: '#DDA24B' },
-  { label: 'Verde', value: '#2E7D4F', dark: '#57B57E' },
-  { label: 'Grafite', value: '#57545F', dark: '#ACA9AF' },
+  { label: 'Oliva', value: '#6B7A3F', dark: '#A3B26B' },
+  { label: 'Ruggine', value: '#B4402E', dark: '#E4816C' },
+  { label: 'Sabbia', value: '#8A7259', dark: '#C4AF95' },
 ];
 
 // Background overrides only make sense as light "paper" tones — applied
@@ -20,8 +20,8 @@ export const ACCENT_PRESETS = [
 // only honors bgColor when the resolved theme is light.
 export const BG_PRESETS = [
   { label: 'Carta (default)', value: null },
-  { label: 'Neve', value: '#FFFFFF' },
-  { label: 'Seppia', value: '#F2E9DC' },
+  { label: 'Latte', value: '#FBF7EF' },
+  { label: 'Seppia', value: '#F2E4CC' },
 ];
 
 export const FONT_OPTIONS: Array<{ label: string; value: NonNullable<UserSettings['font']> }> = [

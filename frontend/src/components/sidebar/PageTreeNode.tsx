@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Plus, MoreHorizontal, Trash2, Link2, Copy } from 'lucide-react';
+import { ChevronRight, FilePlus2, FolderPlus, MoreHorizontal, Trash2, Link2 } from 'lucide-react';
 import type { PageSummary } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
@@ -82,9 +82,14 @@ export default function PageTreeNode({
     }
   }
 
-  async function addChild() {
+  async function addChild(kind: 'folder' | 'note') {
     if (!isOpen) toggleExpanded(page.id);
-    const created = await createPage(spaceId, page.id, 'Senza titolo');
+    const created = await createPage(
+      spaceId,
+      page.id,
+      kind === 'folder' ? 'Nuova cartella' : 'Senza titolo',
+      kind === 'folder' ? 'folder' : undefined
+    );
     navigate(`/space/${spaceId}/page/${created.id}`);
   }
 
@@ -183,11 +188,21 @@ export default function PageTreeNode({
                 className="flex h-5 w-5 items-center justify-center rounded hover:bg-background"
                 onClick={(e) => {
                   e.stopPropagation();
-                  addChild();
+                  addChild('folder');
                 }}
-                aria-label="Nuova sottopagina"
+                aria-label="Nuova sottocartella"
               >
-                <Plus className="h-3.5 w-3.5" />
+                <FolderPlus className="h-3.5 w-3.5" />
+              </button>
+              <button
+                className="flex h-5 w-5 items-center justify-center rounded hover:bg-background"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  addChild('note');
+                }}
+                aria-label="Nuova sottonota"
+              >
+                <FilePlus2 className="h-3.5 w-3.5" />
               </button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -215,8 +230,11 @@ export default function PageTreeNode({
         </ContextMenuTrigger>
         <ContextMenuContent>
           <ContextMenuItem onClick={() => setRenaming(true)}>Rinomina</ContextMenuItem>
-          <ContextMenuItem onClick={addChild}>
-            <Copy className="h-4 w-4" /> Nuova sottopagina
+          <ContextMenuItem onClick={() => addChild('folder')}>
+            <FolderPlus className="h-4 w-4" /> Nuova sottocartella
+          </ContextMenuItem>
+          <ContextMenuItem onClick={() => addChild('note')}>
+            <FilePlus2 className="h-4 w-4" /> Nuova sottonota
           </ContextMenuItem>
           <ContextMenuItem onClick={handleShare}>
             <Link2 className="h-4 w-4" /> Condividi

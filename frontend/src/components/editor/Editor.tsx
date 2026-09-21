@@ -94,11 +94,13 @@ export default function Editor({
 
   if (loading || !editor) {
     return (
-      <div className="mx-auto flex w-full max-w-[760px] flex-col gap-3 px-8 py-10">
-        <Skeleton className="h-9 w-2/3" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-5/6" />
-        <Skeleton className="h-4 w-3/4" />
+      <div className="h-full overflow-y-auto bg-muted/40 px-4 py-8 sm:px-8">
+        <div className="mx-auto flex w-full max-w-[760px] flex-col gap-3 rounded-2xl border border-border bg-card px-8 py-10 shadow-sm sm:px-14">
+          <Skeleton className="h-9 w-2/3" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
       </div>
     );
   }
@@ -107,8 +109,8 @@ export default function Editor({
     <div className="flex h-full flex-col">
       <Toolbar editor={editor} onPickImage={() => fileInputRef.current?.click()} />
       <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden onChange={onFilePicked} />
-      <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-[760px] px-8 py-8">
+      <div className="flex-1 overflow-y-auto bg-muted/40 px-4 py-8 sm:px-8">
+        <div className="mx-auto w-full max-w-[760px] rounded-2xl border border-border bg-card px-8 py-10 shadow-sm sm:px-14">
           <textarea
             ref={titleRef}
             rows={1}
