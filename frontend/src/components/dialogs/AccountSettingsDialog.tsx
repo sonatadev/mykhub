@@ -141,6 +141,7 @@ export default function AccountSettingsDialog({
 
             <div className="flex flex-col gap-1.5">
               <Label>Sfondo</Label>
+              <p className="text-xs text-muted-foreground">Si applica solo al tema chiaro.</p>
               <div className="flex flex-wrap gap-2">
                 {BG_PRESETS.map((b) => (
                   <button

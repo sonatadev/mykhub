@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import IconPicker, { ColorField } from '@/components/IconPicker';
+import IconGlyph from '@/components/IconGlyph';
 import { membersApi, spacesApi, ApiError } from '@/lib/api';
 import { useAuthStore } from '@/lib/store/auth';
 import { useWorkspaceStore } from '@/lib/store/workspace';
@@ -147,7 +148,7 @@ export default function SpaceSettingsDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span>{space.icon}</span> {space.name}
+            <IconGlyph value={space.icon} kind="space" /> {space.name}
           </DialogTitle>
         </DialogHeader>
 

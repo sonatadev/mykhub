@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import IconPicker, { ColorField } from '@/components/IconPicker';
 import { useWorkspaceStore } from '@/lib/store/workspace';
+import { DEFAULT_SPACE_ICON } from '@/lib/icons';
 import { toast } from 'sonner';
 
 export default function NewSpacePopover() {
@@ -14,7 +15,7 @@ export default function NewSpacePopover() {
   const createSpace = useWorkspaceStore((s) => s.createSpace);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
-  const [icon, setIcon] = useState('📁');
+  const [icon, setIcon] = useState(DEFAULT_SPACE_ICON);
   const [color, setColor] = useState('#6366f1');
   const [creating, setCreating] = useState(false);
 
@@ -26,7 +27,7 @@ export default function NewSpacePopover() {
       const space = await createSpace({ name: name.trim(), icon, color });
       setOpen(false);
       setName('');
-      setIcon('📁');
+      setIcon(DEFAULT_SPACE_ICON);
       setColor('#6366f1');
       navigate(`/space/${space.id}`);
     } catch {

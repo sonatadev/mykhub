@@ -30,6 +30,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useWorkspaceStore } from '@/lib/store/workspace';
 import { pagesApi } from '@/lib/api';
+import IconGlyph from '@/components/IconGlyph';
 import { toast } from 'sonner';
 import type { DropPosition } from '@/lib/reorder';
 
@@ -155,7 +156,7 @@ export default function PageTreeNode({
               <ChevronRight className={cn('h-3.5 w-3.5 transition-transform text-muted-foreground', isOpen && 'rotate-90')} />
             </button>
 
-            <span className="shrink-0 text-[15px] leading-none">{page.icon}</span>
+            <IconGlyph value={page.icon} kind="page" />
 
             {renaming ? (
               <Input

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { pagesApi, spacesApi } from '../api';
 import type { PageSummary, Space } from '../types';
+import { DEFAULT_PAGE_ICON } from '../icons';
 
 interface WorkspaceState {
   spaces: Space[];
@@ -88,7 +89,12 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   createPage: async (spaceId, parentPageId, title) => {
-    const page = await pagesApi.create({ space_id: spaceId, parent_page_id: parentPageId, title });
+    const page = await pagesApi.create({
+      space_id: spaceId,
+      parent_page_id: parentPageId,
+      title,
+      icon: DEFAULT_PAGE_ICON,
+    });
     set((s) => ({
       pagesBySpace: { ...s.pagesBySpace, [spaceId]: [...(s.pagesBySpace[spaceId] || []), page] },
     }));

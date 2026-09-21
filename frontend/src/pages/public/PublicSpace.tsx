@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { buildTree } from '@/lib/reorder';
 import { cn } from '@/lib/utils';
+import IconGlyph from '@/components/IconGlyph';
 
 function tokenFromPath() {
   const m = window.location.pathname.match(/\/ws\/([a-f0-9]+)/);
@@ -41,7 +42,7 @@ function TocTree({
               activeId === p.id ? 'bg-accent text-accent-foreground' : 'hover:bg-muted text-foreground/80'
             )}
           >
-            <span className="shrink-0">{p.icon}</span>
+            <IconGlyph value={p.icon} kind="page" />
             <span className="truncate">{p.title}</span>
           </button>
           <TocTree tree={tree} parentId={p.id} depth={depth + 1} activeId={activeId} onSelect={onSelect} />
@@ -98,7 +99,7 @@ export default function PublicSpace() {
   const toc = (
     <div className="flex h-full flex-col gap-1 overflow-y-auto p-3">
       <div className="mb-2 flex items-center gap-1.5 px-1 text-sm font-semibold">
-        <span>{data.space.icon}</span> {data.space.name}
+        <IconGlyph value={data.space.icon} kind="space" /> {data.space.name}
       </div>
       <TocTree tree={tree} parentId={null} depth={0} activeId={activeId} onSelect={setActiveId} />
     </div>
@@ -121,8 +122,8 @@ export default function PublicSpace() {
         </div>
         {activePage ? (
           <div className="mx-auto w-full max-w-[720px] px-6 py-12">
-            <h1 className="mb-6 font-serif text-3xl font-semibold leading-tight">
-              {activePage.icon} {activePage.title}
+            <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight">
+              <IconGlyph value={activePage.icon} kind="page" className="h-7 w-7" /> {activePage.title}
             </h1>
             <ReadOnlyContent content={activePage.content} />
           </div>

@@ -4,6 +4,7 @@ import { publicApi, ApiError } from '@/lib/api';
 import type { PublicPage as PublicPageData } from '@/lib/types';
 import ReadOnlyContent from '@/components/editor/ReadOnlyContent';
 import { Skeleton } from '@/components/ui/skeleton';
+import IconGlyph from '@/components/IconGlyph';
 
 function tokenFromPath() {
   const m = window.location.pathname.match(/\/s\/([a-f0-9]+)/);
@@ -49,8 +50,8 @@ export default function PublicPage() {
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-[720px] px-6 py-16">
         <div className="mb-6 flex items-center gap-1.5 text-xs text-muted-foreground">
-          <span>
-            {page.space_icon} {page.space_name}
+          <span className="flex items-center gap-1.5">
+            <IconGlyph value={page.space_icon} kind="space" className="h-3.5 w-3.5" /> {page.space_name}
           </span>
           {page.breadcrumb.map((title, i) => (
             <span key={i} className="flex items-center gap-1.5">
@@ -59,8 +60,8 @@ export default function PublicPage() {
             </span>
           ))}
         </div>
-        <h1 className="mb-6 font-serif text-3xl font-semibold leading-tight">
-          {page.icon} {page.title}
+        <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight">
+          <IconGlyph value={page.icon} kind="page" className="h-7 w-7" /> {page.title}
         </h1>
         <ReadOnlyContent content={page.content} />
       </div>

@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import SpaceSettingsDialog from '@/components/dialogs/SpaceSettingsDialog';
+import IconGlyph from '@/components/IconGlyph';
 import { toast } from 'sonner';
 
 export default function SpaceSection({
@@ -111,7 +112,7 @@ export default function SpaceSection({
         >
           <ChevronRight className={cn('h-3.5 w-3.5 text-muted-foreground transition-transform', open && 'rotate-90')} />
         </button>
-        <span className="text-[15px] leading-none">{space.icon}</span>
+        <IconGlyph value={space.icon} kind="space" />
         <span className="flex-1 truncate">{space.name}</span>
         {space.role === 'member' && (
           <Badge variant="secondary" className="h-4 px-1.5 text-[10px] font-normal">

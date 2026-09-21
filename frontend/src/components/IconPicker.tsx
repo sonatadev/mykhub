@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
-
-const EMOJI = [
-  '📄', '📁', '📝', '📚', '💡', '✅', '🎯', '📌', '🗂️', '📊',
-  '🧠', '🔬', '🛠️', '🎨', '🌱', '🔖', '💬', '📈', '🗓️', '⭐',
-  '🏠', '💼', '🎓', '🧩', '🔧', '🌍', '🍀', '🔥', '🧪', '📷',
-];
+import { ICONS, ICON_KEYS } from '@/lib/icons';
+import { cn } from '@/lib/utils';
 
 export default function IconPicker({
   value,
@@ -18,6 +14,7 @@ export default function IconPicker({
   triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const Current = ICONS[value] ?? ICONS.folder;
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -25,28 +22,34 @@ export default function IconPicker({
           type="button"
           className={
             triggerClassName ??
-            'flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-lg hover:bg-muted'
+            'flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background hover:bg-muted'
           }
           aria-label="Scegli icona"
         >
-          {value}
+          <Current className="h-4 w-4" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-64">
         <div className="grid grid-cols-6 gap-1">
-          {EMOJI.map((e) => (
-            <button
-              key={e}
-              type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-md text-base hover:bg-muted"
-              onClick={() => {
-                onChange(e);
-                setOpen(false);
-              }}
-            >
-              {e}
-            </button>
-          ))}
+          {ICON_KEYS.map((key) => {
+            const Icon = ICONS[key];
+            return (
+              <button
+                key={key}
+                type="button"
+                className={cn(
+                  'flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted',
+                  value === key && 'bg-accent text-accent-foreground'
+                )}
+                onClick={() => {
+                  onChange(key);
+                  setOpen(false);
+                }}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            );
+          })}
         </div>
       </PopoverContent>
     </Popover>

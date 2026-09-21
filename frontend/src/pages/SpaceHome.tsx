@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useWorkspaceStore } from '@/lib/store/workspace';
 import { useUiStore } from '@/lib/store/ui';
 import { buildTree } from '@/lib/reorder';
+import IconGlyph from '@/components/IconGlyph';
 
 export default function SpaceHome() {
   const { spaceId } = useParams();
@@ -55,8 +56,8 @@ export default function SpaceHome() {
         >
           <Menu className="h-4 w-4" />
         </Button>
-        <span className="text-sm font-medium">
-          {space?.icon} {space?.name}
+        <span className="flex items-center gap-1.5 text-sm font-medium">
+          <IconGlyph value={space?.icon} kind="space" /> {space?.name}
         </span>
       </div>
       <div className="flex flex-1 flex-col items-center justify-center gap-3 px-4 text-center">

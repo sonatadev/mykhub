@@ -15,6 +15,7 @@ import { useUiStore } from '@/lib/store/ui';
 import PresenceAvatars from './PresenceAvatars';
 import SaveStatusBadge from './SaveStatusBadge';
 import PageShareDialog from '@/components/dialogs/PageShareDialog';
+import IconGlyph from '@/components/IconGlyph';
 import type { CollabUser, ConnectionStatus, SaveStatus } from './useCollabEditor';
 
 export default function EditorTopBar({
@@ -65,16 +66,24 @@ export default function EditorTopBar({
         <BreadcrumbList className="flex-nowrap">
           <span className="hidden items-center gap-1.5 sm:flex">
             <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => navigate(`/space/${spaceId}`)} className="cursor-pointer">
-                {space?.icon} {space?.name}
+              <BreadcrumbLink
+                onClick={() => navigate(`/space/${spaceId}`)}
+                className="flex cursor-pointer items-center gap-1.5"
+              >
+                <IconGlyph value={space?.icon} kind="space" className="h-3.5 w-3.5" />
+                <span className="min-w-0 truncate">{space?.name}</span>
               </BreadcrumbLink>
             </BreadcrumbItem>
             {trail.slice(0, -1).map((p) => (
               <span key={p.id} className="flex items-center gap-1.5">
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink onClick={() => navigate(`/space/${spaceId}/page/${p.id}`)} className="cursor-pointer">
-                    {p.icon} {p.title}
+                  <BreadcrumbLink
+                    onClick={() => navigate(`/space/${spaceId}/page/${p.id}`)}
+                    className="flex cursor-pointer items-center gap-1.5"
+                  >
+                    <IconGlyph value={p.icon} kind="page" className="h-3.5 w-3.5" />
+                    <span className="min-w-0 truncate">{p.title}</span>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
               </span>
@@ -83,8 +92,9 @@ export default function EditorTopBar({
           </span>
           {trail.length > 0 && (
             <BreadcrumbItem>
-              <BreadcrumbPage className="max-w-[11rem] sm:max-w-[14rem]">
-                {trail[trail.length - 1].icon} {trail[trail.length - 1].title}
+              <BreadcrumbPage className="flex max-w-[11rem] items-center gap-1.5 sm:max-w-[14rem]">
+                <IconGlyph value={trail[trail.length - 1].icon} kind="page" className="h-3.5 w-3.5 shrink-0" />
+                <span className="min-w-0 truncate">{trail[trail.length - 1].title}</span>
               </BreadcrumbPage>
             </BreadcrumbItem>
           )}
