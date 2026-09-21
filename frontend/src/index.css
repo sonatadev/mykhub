@@ -96,6 +96,10 @@
     font-feature-settings: 'cv11', 'ss01';
     -webkit-font-smoothing: antialiased;
   }
+
+  ::selection {
+    @apply bg-accent text-accent-foreground;
+  }
 }
 
 /* ---------- Editor content typography ---------- */
@@ -121,19 +125,19 @@
   @apply text-muted-foreground;
 }
 .ProseMirror h1 {
-  @apply text-3xl font-semibold mt-8 mb-3 tracking-tight;
+  @apply text-3xl font-semibold mt-8 mb-3 tracking-tight text-primary;
 }
 .ProseMirror h2 {
-  @apply text-xl font-semibold mt-6 mb-2 tracking-tight;
+  @apply text-xl font-semibold mt-6 mb-2 tracking-tight text-primary;
 }
 .ProseMirror p {
   @apply my-3 leading-7;
 }
 .ProseMirror ul {
-  @apply list-disc pl-6 my-3;
+  @apply list-disc pl-6 my-3 marker:text-primary;
 }
 .ProseMirror ol {
-  @apply list-decimal pl-6 my-3;
+  @apply list-decimal pl-6 my-3 marker:text-primary marker:font-semibold;
 }
 .ProseMirror li {
   @apply my-1;
@@ -168,6 +172,11 @@
 .ProseMirror ul[data-type='taskList'] li > div {
   @apply flex-1;
 }
+.ProseMirror ul[data-type='taskList'] input[type='checkbox'] {
+  accent-color: hsl(var(--primary));
+  width: 16px;
+  height: 16px;
+}
 .ProseMirror table {
   @apply border-collapse my-4 w-full;
 }
@@ -176,7 +185,7 @@
   @apply border border-border px-3 py-2 text-left align-top;
 }
 .ProseMirror th {
-  @apply bg-muted font-semibold;
+  @apply bg-accent/50 text-accent-foreground font-semibold;
 }
 .ProseMirror img {
   @apply max-w-full rounded-md my-3;

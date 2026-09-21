@@ -39,7 +39,7 @@ function TocTree({
             style={{ paddingLeft: depth * 14 + 10 }}
             className={cn(
               'flex w-full items-center gap-1.5 rounded-md py-1.5 pr-2 text-left text-sm truncate',
-              activeId === p.id ? 'bg-accent text-accent-foreground' : 'hover:bg-muted text-foreground/80'
+              activeId === p.id ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/60 text-foreground/80'
             )}
           >
             <IconGlyph value={p.icon} kind="page" />
@@ -123,7 +123,7 @@ export default function PublicSpace() {
         {activePage ? (
           <div className="mx-auto w-full max-w-[720px] px-4 py-8 sm:px-6 sm:py-12">
             <div className="rounded-2xl border border-border bg-card px-6 py-10 shadow-sm sm:px-14">
-              <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight">
+              <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight text-primary">
                 <IconGlyph value={activePage.icon} kind="page" className="h-7 w-7" /> {activePage.title}
               </h1>
               <ReadOnlyContent content={activePage.content} />

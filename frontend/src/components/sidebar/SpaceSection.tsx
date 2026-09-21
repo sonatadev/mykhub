@@ -101,7 +101,9 @@ export default function SpaceSection({
       <div
         className={cn(
           'group flex items-center gap-1 rounded-md px-1.5 py-1 text-sm font-medium cursor-pointer',
-          params.spaceId === String(space.id) && !activePageId ? 'bg-accent text-accent-foreground' : 'hover:bg-muted'
+          params.spaceId === String(space.id) && !activePageId
+            ? 'bg-accent text-accent-foreground'
+            : 'hover:bg-accent/60'
         )}
         onClick={() => {
           setOpen((o) => !o);

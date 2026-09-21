@@ -62,7 +62,7 @@ export default function PublicPage() {
             </span>
           ))}
         </div>
-        <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight">
+        <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight text-primary">
           <IconGlyph value={page.icon} kind="page" className="h-7 w-7" /> {page.title}
         </h1>
         <ReadOnlyContent content={page.content} />

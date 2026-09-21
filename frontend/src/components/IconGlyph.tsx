@@ -12,5 +12,5 @@ export default function IconGlyph({
   className?: string;
 }) {
   const Icon = resolveIcon(value, kind === 'page' ? FileText : Folder);
-  return <Icon className={cn('h-4 w-4 shrink-0', className)} />;
+  return <Icon className={cn('h-4 w-4 shrink-0 text-primary/85', className)} />;
 }

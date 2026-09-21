@@ -142,7 +142,7 @@ export default function PageTreeNode({
             onDrop={onDrop}
             className={cn(
               'group relative flex items-center gap-1 rounded-md py-1 pr-1 text-sm cursor-pointer select-none',
-              isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-muted text-sidebar-foreground/90'
+              isActive ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/60 text-sidebar-foreground/90'
             )}
             style={{ paddingLeft: depth * 16 + 6 }}
             onClick={() => !renaming && navigate(`/space/${spaceId}/page/${page.id}`)}

@@ -116,7 +116,7 @@ export default function Editor({
             rows={1}
             placeholder="Senza titolo"
             onInput={onTitleInput}
-            className="w-full resize-none overflow-hidden border-none bg-transparent font-serif text-3xl font-semibold leading-tight text-foreground outline-none placeholder:text-muted-foreground/50"
+            className="w-full resize-none overflow-hidden border-none bg-transparent font-serif text-3xl font-semibold leading-tight text-primary outline-none placeholder:text-muted-foreground/50"
           />
           <div data-font={contentFont === 'inter' ? undefined : contentFont}>
             <EditorContent editor={editor} />
