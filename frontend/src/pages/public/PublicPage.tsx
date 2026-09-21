@@ -39,7 +39,7 @@ export default function PublicPage() {
   if (!page) {
     return (
       <div className="min-h-screen bg-muted/40 px-4 py-10 sm:px-8 sm:py-16">
-        <div className="mx-auto flex max-w-[720px] flex-col gap-3 rounded-2xl border border-border bg-card px-6 py-10 shadow-sm sm:px-14">
+        <div className="mx-auto flex max-w-[720px] flex-col gap-3 rounded-2xl border-2 border-border bg-card px-6 py-10 shadow-sm sm:px-14">
           <Skeleton className="h-8 w-2/3" />
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
@@ -50,7 +50,7 @@ export default function PublicPage() {
 
   return (
     <div className="min-h-screen bg-muted/40 px-4 py-10 sm:px-8 sm:py-16">
-      <div className="mx-auto max-w-[720px] rounded-2xl border border-border bg-card px-6 py-10 shadow-sm sm:px-14">
+      <div className="mx-auto max-w-[720px] rounded-2xl border-2 border-border bg-card px-6 py-10 shadow-sm sm:px-14">
         <div className="mb-6 flex items-center gap-1.5 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <IconGlyph value={page.space_icon} kind="space" className="h-3.5 w-3.5" /> {page.space_name}

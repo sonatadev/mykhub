@@ -122,7 +122,7 @@ export default function PublicSpace() {
         </div>
         {activePage ? (
           <div className="mx-auto w-full max-w-[720px] px-4 py-8 sm:px-6 sm:py-12">
-            <div className="rounded-2xl border border-border bg-card px-6 py-10 shadow-sm sm:px-14">
+            <div className="rounded-2xl border-2 border-border bg-card px-6 py-10 shadow-sm sm:px-14">
               <h1 className="mb-6 flex items-center gap-2.5 font-serif text-3xl font-semibold leading-tight text-primary">
                 <IconGlyph value={activePage.icon} kind="page" className="h-7 w-7" /> {activePage.title}
               </h1>

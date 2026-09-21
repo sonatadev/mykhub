@@ -108,12 +108,22 @@ export function applyUserTheme(settings: UserSettings | undefined) {
       const tintS = Math.min(hsl.s, isDark ? 28 : 40);
       root.style.setProperty('--accent', `${hsl.h} ${tintS}% ${isDark ? 20 : 92}%`);
       root.style.setProperty('--accent-foreground', `${hsl.h} ${Math.min(hsl.s, 45)}% ${isDark ? 88 : 20}%`);
+      // Cozy outlines: every plain border picks up the accent's hue too,
+      // just light/dark enough to read as a line rather than a fill.
+      const borderS = Math.min(hsl.s, isDark ? 22 : 32);
+      const border = `${hsl.h} ${borderS}% ${isDark ? 24 : 79}%`;
+      root.style.setProperty('--border', border);
+      root.style.setProperty('--input', border);
+      root.style.setProperty('--sidebar-border', border);
     }
   } else {
     root.style.removeProperty('--primary');
     root.style.removeProperty('--ring');
     root.style.removeProperty('--accent');
     root.style.removeProperty('--accent-foreground');
+    root.style.removeProperty('--border');
+    root.style.removeProperty('--input');
+    root.style.removeProperty('--sidebar-border');
   }
 
   // Custom paper tones are light-mode only (see BG_PRESETS comment) —

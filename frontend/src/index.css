@@ -30,13 +30,13 @@
     --success: 100 25% 34%;
     --warning: 30 75% 42%;
 
-    --border: 34 25% 82%;
-    --input: 34 25% 82%;
+    --border: 24 32% 79%;
+    --input: 24 32% 79%;
     --ring: 24 48% 34%;
 
     --sidebar: 36 30% 90%;
     --sidebar-foreground: 25 30% 16%;
-    --sidebar-border: 34 25% 82%;
+    --sidebar-border: 24 32% 79%;
 
     --radius: 1rem;
 
@@ -78,13 +78,13 @@
     --success: 100 25% 55%;
     --warning: 32 60% 58%;
 
-    --border: 25 14% 20%;
-    --input: 25 14% 20%;
+    --border: 24 22% 24%;
+    --input: 24 22% 24%;
     --ring: 30 45% 55%;
 
     --sidebar: 25 18% 12%;
     --sidebar-foreground: 38 30% 92%;
-    --sidebar-border: 25 14% 20%;
+    --sidebar-border: 24 22% 24%;
   }
 
   * {
