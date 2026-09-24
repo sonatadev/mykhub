@@ -16,6 +16,7 @@ import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { ResizableImage } from './ImageExtension';
+import { editorExtensions, SlashCommands } from './extensions';
 import { getToken } from '@/lib/api';
 import { pagesApi, uploadApi } from '@/lib/api';
 import { presenceColor } from '@/lib/utils';
@@ -146,6 +147,10 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
         TaskItem.configure({ nested: true }),
         Underline,
         ResizableImage,
+        ...editorExtensions,
+        SlashCommands.configure({
+          onPickImage: () => window.dispatchEvent(new CustomEvent('mykhub:pick-image')),
+        }),
         Collaboration.configure({ document: ydoc }),
         ...(providerReady && providerRef.current
           ? [

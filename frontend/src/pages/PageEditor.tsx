@@ -1,8 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Editor from '@/components/editor/Editor';
 import EditorTopBar from '@/components/editor/EditorTopBar';
 import { useAuthStore } from '@/lib/store/auth';
+import { rememberPage } from '@/lib/lastPage';
 import type { CollabUser, ConnectionStatus, SaveStatus } from '@/components/editor/useCollabEditor';
 
 export default function PageEditor() {
@@ -17,6 +18,11 @@ export default function PageEditor() {
   }>({ saveStatus: 'saved', connection: 'connecting', presentUsers: [], shareToken: null });
 
   const onStatusChange = useCallback((s: typeof status) => setStatus(s), []);
+
+  useEffect(() => {
+    if (!user || !spaceId || !pageId) return;
+    rememberPage(user.id, Number(spaceId), Number(pageId));
+  }, [user, spaceId, pageId]);
 
   if (!user || !spaceId || !pageId) return null;
 

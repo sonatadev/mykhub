@@ -9,15 +9,18 @@ import {
   ListOrdered,
   ListChecks,
   ImageIcon,
+  FunctionSquare,
+  Sigma,
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Separator } from '@/components/ui/separator';
 import TableGridPopover from './TableGridPopover';
 import LinkPopover from './LinkPopover';
+import TheoremMenu from './TheoremMenu';
 
 export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => void }) {
   return (
-    <div className="flex flex-wrap items-center gap-0.5 border-b border-border px-2 py-1.5">
+    <div className="editor-toolbar flex items-center gap-0.5 overflow-x-auto border-b border-border px-2 py-1.5 md:flex-wrap md:overflow-x-visible print:hidden">
       <Toggle
         size="sm"
         pressed={editor.isActive('bold')}
@@ -96,6 +99,27 @@ export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPic
       <Toggle size="sm" onPressedChange={onPickImage} aria-label="Inserisci immagine">
         <ImageIcon />
       </Toggle>
+
+      <Separator orientation="vertical" className="mx-1 h-5" />
+
+      <Toggle
+        size="sm"
+        onPressedChange={() => editor.chain().focus().insertInlineMath().run()}
+        aria-label="Formula inline (Ctrl+M)"
+        title="Formula inline — Ctrl+M"
+      >
+        <FunctionSquare />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive('mathBlock')}
+        onPressedChange={() => editor.chain().focus().setMathBlock().run()}
+        aria-label="Formula in display (Ctrl+Shift+M)"
+        title="Formula in display — Ctrl+Shift+M"
+      >
+        <Sigma />
+      </Toggle>
+      <TheoremMenu editor={editor} />
     </div>
   );
 }

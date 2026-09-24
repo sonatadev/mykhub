@@ -15,6 +15,7 @@ import { useUiStore } from '@/lib/store/ui';
 import PresenceAvatars from './PresenceAvatars';
 import SaveStatusBadge from './SaveStatusBadge';
 import PageShareDialog from '@/components/dialogs/PageShareDialog';
+import PageExportMenu from './PageExportMenu';
 import IconGlyph from '@/components/IconGlyph';
 import type { CollabUser, ConnectionStatus, SaveStatus } from './useCollabEditor';
 
@@ -51,7 +52,7 @@ export default function EditorTopBar({
   }, [pages, pageId]);
 
   return (
-    <div className="flex h-12 items-center gap-2 border-b border-border px-3">
+    <div className="flex h-12 items-center gap-2 border-b border-border px-3 print:hidden">
       <Button
         variant="ghost"
         size="icon"
@@ -103,6 +104,7 @@ export default function EditorTopBar({
 
       <SaveStatusBadge saveStatus={saveStatus} connection={connection} />
       <PresenceAvatars users={presentUsers} />
+      <PageExportMenu pageId={pageId} />
       <PageShareDialog pageId={pageId} initialToken={shareToken} />
     </div>
   );

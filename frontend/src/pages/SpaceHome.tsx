@@ -4,6 +4,8 @@ import { Menu, FilePlus2, FolderPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWorkspaceStore } from '@/lib/store/workspace';
 import { useUiStore } from '@/lib/store/ui';
+import { useAuthStore } from '@/lib/store/auth';
+import { lastPageInSpace } from '@/lib/lastPage';
 import { buildTree } from '@/lib/reorder';
 import IconGlyph from '@/components/IconGlyph';
 
@@ -12,6 +14,7 @@ export default function SpaceHome() {
   const id = Number(spaceId);
   const navigate = useNavigate();
   const setMobileSidebarOpen = useUiStore((s) => s.setMobileSidebarOpen);
+  const userId = useAuthStore((s) => s.user?.id);
 
   const space = useWorkspaceStore((s) => s.spaces.find((sp) => sp.id === id));
   const pages = useWorkspaceStore((s) => s.pagesBySpace[id]);
@@ -26,8 +29,12 @@ export default function SpaceHome() {
     if (!pages) return;
     const tree = buildTree(pages);
     const roots = tree.get(null) || [];
-    if (roots.length > 0) navigate(`/space/${id}/page/${roots[0].id}`, { replace: true });
-  }, [pages, id, navigate]);
+    // The page this space was left on, as long as it still exists; the first
+    // one in the sidebar is only the fallback.
+    const remembered = userId != null ? lastPageInSpace(userId, id) : null;
+    const target = pages.find((p) => p.id === remembered) ?? roots[0];
+    if (target) navigate(`/space/${id}/page/${target.id}`, { replace: true });
+  }, [pages, id, userId, navigate]);
 
   async function addPage(kind: 'folder' | 'note') {
     const created = await createPage(

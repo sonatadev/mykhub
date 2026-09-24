@@ -4,6 +4,8 @@ import { NotebookText, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWorkspaceStore } from '@/lib/store/workspace';
 import { useUiStore } from '@/lib/store/ui';
+import { useAuthStore } from '@/lib/store/auth';
+import { lastSpaceId } from '@/lib/lastPage';
 import NewSpacePopover from '@/components/sidebar/NewSpacePopover';
 
 export default function EmptyWorkspace() {
@@ -11,10 +13,17 @@ export default function EmptyWorkspace() {
   const spaces = useWorkspaceStore((s) => s.spaces);
   const spacesLoaded = useWorkspaceStore((s) => s.spacesLoaded);
   const setMobileSidebarOpen = useUiStore((s) => s.setMobileSidebarOpen);
+  const userId = useAuthStore((s) => s.user?.id);
 
   useEffect(() => {
-    if (spacesLoaded && spaces.length > 0) navigate(`/space/${spaces[0].id}`, { replace: true });
-  }, [spacesLoaded, spaces, navigate]);
+    if (!spacesLoaded || spaces.length === 0) return;
+    // Head for the space that was open last; SpaceHome then picks the page
+    // inside it, which is also where a page that has since been deleted is
+    // caught and replaced with a real one.
+    const remembered = userId != null ? lastSpaceId(userId) : null;
+    const target = spaces.find((s) => s.id === remembered) ?? spaces[0];
+    navigate(`/space/${target.id}`, { replace: true });
+  }, [spacesLoaded, spaces, userId, navigate]);
 
   if (!spacesLoaded || spaces.length > 0) return null;
 

@@ -1,12 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { EditorContent } from '@tiptap/react';
 import { toast } from 'sonner';
 import Toolbar from './Toolbar';
+import MathKeyBar from './MathKeyBar';
 import { useCollabEditor, type SaveStatus, type ConnectionStatus, type CollabUser } from './useCollabEditor';
 import { pagesApi, uploadApi, ApiError } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ContentFont } from '@/lib/types';
 import { useWorkspaceStore } from '@/lib/store/workspace';
+import { useUiStore } from '@/lib/store/ui';
 
 export default function Editor({
   pageId,
@@ -31,6 +33,9 @@ export default function Editor({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLTextAreaElement>(null);
   const titleSaveTimer = useRef<ReturnType<typeof setTimeout>>();
+  // Mirrors the title textarea: a textarea prints as an empty box, so the
+  // printed page renders this heading instead.
+  const [titleText, setTitleText] = useState('');
 
   useEffect(() => {
     onStatusChange({ saveStatus, connection, presentUsers, shareToken: page?.share_token ?? null });
@@ -38,12 +43,45 @@ export default function Editor({
 
   useEffect(() => {
     if (titleRef.current) titleRef.current.value = page?.title ?? '';
+    setTitleText(page?.title ?? '');
   }, [page?.id, page?.title]);
+
+  useEffect(() => {
+    // Publish the editor so global UI (the command palette) can write into it.
+    const { setActiveEditor } = useUiStore.getState();
+    setActiveEditor(editor ?? null);
+    return () => setActiveEditor(null);
+  }, [editor]);
+
+  useEffect(() => {
+    const open = () => fileInputRef.current?.click();
+    window.addEventListener('mykhub:pick-image', open);
+    return () => window.removeEventListener('mykhub:pick-image', open);
+  }, []);
+
+  useEffect(() => {
+    if (!editor) return;
+    // An inline formula shows its LaTeX source while the caret sits inside it,
+    // which would land on paper as `$…$`. Making the editor read-only for the
+    // duration of the print forces every formula back to its rendered form.
+    function print() {
+      if (!editor) return;
+      const { from, to } = editor.state.selection;
+      editor.setEditable(false);
+      editor.commands.setTextSelection(0);
+      window.print();
+      editor.setEditable(true);
+      editor.commands.setTextSelection({ from, to });
+    }
+    window.addEventListener('mykhub:print', print);
+    return () => window.removeEventListener('mykhub:print', print);
+  }, [editor]);
 
   function onTitleInput(e: React.FormEvent<HTMLTextAreaElement>) {
     const el = e.currentTarget;
     el.style.height = 'auto';
     el.style.height = `${el.scrollHeight}px`;
+    setTitleText(el.value);
     clearTimeout(titleSaveTimer.current);
     titleSaveTimer.current = setTimeout(() => {
       const title = el.value.trim() || 'Senza titolo';
@@ -109,20 +147,22 @@ export default function Editor({
     <div className="flex h-full flex-col">
       <Toolbar editor={editor} onPickImage={() => fileInputRef.current?.click()} />
       <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden onChange={onFilePicked} />
-      <div className="flex-1 overflow-y-auto bg-muted/40 px-4 py-8 sm:px-8">
-        <div className="mx-auto w-full max-w-[760px] rounded-2xl border-2 border-border bg-card px-8 py-10 shadow-sm sm:px-14">
+      <div className="editor-scroll flex-1 overflow-y-auto bg-muted/40 px-4 py-8 sm:px-8 print:overflow-visible print:bg-transparent print:p-0">
+        <div className="printable mx-auto w-full max-w-[760px] rounded-2xl border-2 border-border bg-card px-8 py-10 shadow-sm sm:px-14">
+          <h1 className="hidden font-serif text-3xl font-semibold leading-tight print:block">{titleText}</h1>
           <textarea
             ref={titleRef}
             rows={1}
             placeholder="Senza titolo"
             onInput={onTitleInput}
-            className="w-full resize-none overflow-hidden border-none bg-transparent font-serif text-3xl font-semibold leading-tight text-primary outline-none placeholder:text-muted-foreground/50"
+            className="w-full resize-none overflow-hidden border-none bg-transparent font-serif text-3xl font-semibold leading-tight text-primary outline-none placeholder:text-muted-foreground/50 print:hidden"
           />
           <div data-font={contentFont === 'inter' ? undefined : contentFont}>
             <EditorContent editor={editor} />
           </div>
         </div>
       </div>
+      <MathKeyBar editor={editor} />
     </div>
   );
 }

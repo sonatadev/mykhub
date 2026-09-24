@@ -130,6 +130,9 @@
 .ProseMirror h2 {
   @apply text-xl font-semibold mt-6 mb-2 tracking-tight text-primary;
 }
+.ProseMirror h3 {
+  @apply text-base font-semibold mt-5 mb-2 tracking-tight text-primary;
+}
 .ProseMirror p {
   @apply my-3 leading-7;
 }
@@ -225,4 +228,354 @@
   user-select: none;
   white-space: nowrap;
   color: #fff;
+}
+
+/* ---------- Matematica ---------- */
+
+/* Numbering for theorem-like environments is drawn from a single counter,
+   so nothing about it is stored in the document. */
+.editor-content {
+  counter-reset: mathenv;
+}
+
+.katex {
+  font-size: 1.05em;
+}
+
+/* Inline $…$ — the raw source is shown only while the caret sits inside it. */
+.Tiptap-mathematics-editor {
+  @apply rounded bg-accent/60 px-1 font-mono text-[0.9em] text-primary;
+}
+.Tiptap-mathematics-render {
+  @apply rounded px-0.5;
+}
+.Tiptap-mathematics-render--editable {
+  @apply cursor-text;
+}
+.Tiptap-mathematics-render--editable:hover {
+  @apply bg-accent/50;
+}
+
+/* Display formulas */
+.math-block {
+  @apply my-4 rounded-xl border border-transparent px-3 py-2 transition-colors;
+}
+.math-block--selected,
+.math-block:focus-within {
+  @apply border-border bg-accent/30;
+}
+.math-block__render {
+  @apply overflow-x-auto overflow-y-hidden py-1 text-center;
+}
+.math-block__render:focus-visible {
+  @apply rounded outline-none ring-2 ring-ring;
+}
+.math-block__render .katex-display {
+  @apply my-0;
+}
+.math-block__editor {
+  @apply relative mt-2;
+}
+.math-field-host {
+  @apply w-full rounded-lg bg-muted px-3 py-2.5;
+}
+.math-field-host math-field {
+  @apply w-full bg-transparent text-foreground outline-none;
+  /* 16px keeps mobile browsers from zooming in when the field takes focus. */
+  font-size: 20px;
+  --caret-color: hsl(var(--primary));
+  --selection-background-color: hsl(var(--primary) / 0.25);
+  --selection-color: hsl(var(--foreground));
+  --contains-highlight-background-color: hsl(var(--primary) / 0.12);
+  --placeholder-color: hsl(var(--muted-foreground));
+  --smart-fence-color: hsl(var(--muted-foreground));
+}
+.math-field-host math-field::part(content) {
+  /* Match the centred resting render, so committing does not shift it. */
+  @apply justify-center text-center;
+}
+.math-field-host math-field::part(menu-toggle) {
+  display: none;
+}
+@media (pointer: fine) {
+  /* With a real keyboard there is nothing to toggle. */
+  .math-field-host math-field::part(virtual-keyboard-toggle) {
+    display: none;
+  }
+}
+.math-block__footer {
+  @apply mt-1.5 flex items-center justify-between gap-2;
+}
+.math-block__hint {
+  @apply text-[10px] uppercase tracking-wide text-muted-foreground;
+}
+.math-block__hint-key {
+  display: none;
+}
+@media (pointer: fine) {
+  .math-block__hint-key {
+    display: inline;
+  }
+}
+.math-block__done {
+  @apply rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground;
+}
+@media (pointer: coarse) {
+  .math-block__done {
+    min-height: 44px;
+    min-width: 72px;
+    font-size: 0.875rem;
+  }
+}
+
+/* Theorem-like environments */
+.theorem-block {
+  @apply my-4 rounded-r-lg border-l-4 border-primary bg-accent/30 px-4 py-3;
+}
+.theorem-block__head {
+  @apply mb-1 flex flex-wrap items-baseline gap-x-1 font-semibold text-primary;
+}
+.theorem-block__label::before {
+  content: attr(data-label);
+}
+.theorem-block[data-numbered] .theorem-block__label::before {
+  counter-increment: mathenv;
+  content: attr(data-label) ' ' counter(mathenv);
+}
+
+/* The optional name, the equivalent of amsthm's \begin{teorema}[…]. */
+.theorem-block__name {
+  @apply font-normal italic text-primary/80;
+}
+/* An inline-grid whose ::after mirrors the text keeps the field exactly as
+   wide as what it holds. */
+.theorem-block__sizer {
+  display: inline-grid;
+  vertical-align: baseline;
+  max-width: 100%;
+}
+.theorem-block__sizer::after {
+  content: attr(data-value);
+  grid-area: 1 / 1;
+  visibility: hidden;
+  white-space: pre;
+  padding: 0 2px;
+}
+.theorem-block__title {
+  grid-area: 1 / 1;
+  width: 100%;
+  min-width: 2ch;
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+/* The prompt stays out of the way until the block is being worked on —
+   except on touch, where there is no hover to reveal it. */
+.theorem-block__title::placeholder {
+  color: transparent;
+}
+.theorem-block:hover .theorem-block__title::placeholder,
+.theorem-block__title:focus::placeholder {
+  color: hsl(var(--muted-foreground) / 0.7);
+}
+@media (pointer: coarse) {
+  .theorem-block__title::placeholder {
+    color: hsl(var(--muted-foreground) / 0.55);
+  }
+}
+.theorem-block__body > :first-child {
+  @apply mt-0;
+}
+.theorem-block__body > :last-child {
+  @apply mb-0;
+}
+.theorem-block[data-variant='dimostrazione'] {
+  @apply border-muted-foreground/40 bg-transparent;
+}
+.theorem-block[data-variant='dimostrazione'] .theorem-block__body > :last-child::after {
+  content: ' ∎';
+  @apply font-semibold text-muted-foreground;
+}
+.theorem-block[data-variant='osservazione'] {
+  @apply border-muted-foreground/40 bg-transparent;
+}
+
+/* Slash command menu (positioned imperatively by the extension) */
+.slash-menu {
+  position: fixed;
+  z-index: 60;
+}
+
+/* ---------- Toolbar ---------- */
+
+/* On a phone the toolbar is a single scrolling row instead of stacking into
+   several lines and eating the page. */
+.editor-toolbar {
+  scrollbar-width: none;
+}
+.editor-toolbar::-webkit-scrollbar {
+  display: none;
+}
+.editor-toolbar > * {
+  flex: 0 0 auto;
+}
+
+/* Touch targets: 28px is comfortable with a mouse, not with a thumb. */
+@media (pointer: coarse) {
+  .editor-toolbar button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ---------- Tastiera dei simboli ---------- */
+
+.editor-scroll {
+  padding-bottom: var(--math-keys-h, 0px);
+}
+
+.math-keys {
+  @apply fixed inset-x-0 bottom-0 z-50 flex items-center gap-1 border-t border-border bg-popover px-2 py-1.5;
+  overflow-x: auto;
+  scrollbar-width: none;
+  /* Placed against the visual viewport when the keyboard is up; `bottom: 0`
+     is the fallback for browsers without visualViewport. */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0.375rem);
+}
+.math-keys::-webkit-scrollbar {
+  display: none;
+}
+.math-keys__key {
+  @apply flex h-11 shrink-0 items-center justify-center rounded-lg bg-muted px-3 text-base text-foreground;
+  min-width: 44px;
+  font-family: theme('fontFamily.mono');
+}
+.math-keys__key:active {
+  @apply bg-accent text-accent-foreground;
+}
+.math-keys__key--wide {
+  @apply text-sm;
+}
+
+@media print {
+  .math-keys {
+    display: none !important;
+  }
+}
+
+/* ---------- Stampa / PDF ---------- */
+@media print {
+  @page {
+    margin: 18mm;
+  }
+
+  /* Print on paper, never on the dark theme. */
+  .dark {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 8%;
+    --card: 0 0% 100%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 32%;
+    --primary: 0 0% 10%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 10%;
+    --border: 0 0% 72%;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .printable {
+    max-width: none !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .ProseMirror {
+    min-height: 0;
+  }
+
+  .math-block__editor,
+  .slash-menu,
+  .collaboration-cursor__caret,
+  .collaboration-cursor__label {
+    display: none !important;
+  }
+
+  .math-block {
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .math-block,
+  .theorem-block,
+  .ProseMirror table,
+  .ProseMirror img,
+  .ProseMirror pre {
+    break-inside: avoid;
+  }
+
+  .ProseMirror h1,
+  .ProseMirror h2,
+  .ProseMirror h3 {
+    break-after: avoid;
+  }
+}
+
+/* Command palette — one shortcut, a few letters, Enter */
+.command-palette {
+  @apply fixed inset-0 z-50 flex items-start justify-center bg-black/40 px-4 pt-[12vh] backdrop-blur-[2px];
+}
+.command-palette__panel {
+  @apply flex max-h-[70vh] w-full max-w-[560px] flex-col overflow-hidden rounded-xl border border-border bg-popover shadow-2xl;
+}
+.command-palette__search {
+  @apply flex items-center gap-2 border-b border-border px-3.5 py-3;
+}
+.command-palette__input {
+  @apply w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground;
+  /* 16px keeps mobile browsers from zooming in when the field takes focus. */
+  font-size: 16px;
+}
+@media (pointer: fine) {
+  .command-palette__input {
+    font-size: 0.875rem;
+  }
+}
+.command-palette__kbd {
+  @apply rounded border border-border px-1.5 py-0.5 text-[10px] uppercase text-muted-foreground;
+}
+.command-palette__list {
+  @apply flex-1 overflow-y-auto p-1.5;
+}
+.command-palette__empty {
+  @apply px-3 py-6 text-center text-sm text-muted-foreground;
+}
+.command-palette__item {
+  @apply flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm text-foreground;
+}
+.command-palette__item--active {
+  @apply bg-accent text-accent-foreground;
+}
+.command-palette__icon {
+  @apply flex h-6 w-6 shrink-0 items-center justify-center;
+}
+.command-palette__preview .katex {
+  font-size: 1.05em;
+}
+.command-palette__label {
+  @apply min-w-0 flex-1 truncate;
+}
+.command-palette__meta {
+  @apply flex shrink-0 items-center gap-1 text-xs text-muted-foreground;
+}
+.command-palette__footer {
+  @apply flex items-center gap-3 border-t border-border px-3.5 py-2 text-[11px] text-muted-foreground;
 }

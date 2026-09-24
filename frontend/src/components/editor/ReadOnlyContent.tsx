@@ -10,6 +10,7 @@ import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Underline from '@tiptap/extension-underline';
 import Image from '@tiptap/extension-image';
+import { mathExtensions } from './extensions';
 
 export default function ReadOnlyContent({ content }: { content: Record<string, unknown> }) {
   const editor = useEditor({
@@ -27,6 +28,7 @@ export default function ReadOnlyContent({ content }: { content: Record<string, u
       TaskItem.configure({ nested: true }),
       Underline,
       Image,
+      ...mathExtensions,
     ],
     editorProps: { attributes: { class: 'editor-content' } },
   });
