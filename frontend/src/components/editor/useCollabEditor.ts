@@ -74,18 +74,33 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
       // Fetch and apply the REST snapshot's ydoc_state *before* opening the
       // socket, so the client starts from the same base state as the server
       // and the WS exchange is a delta, not a full resync.
-      const full = await pagesApi.get(pageId);
+      let full: PageFull | null = null;
+      try {
+        full = await pagesApi.get(pageId);
+      } catch {
+        // No network: carry on with whatever IndexedDB has for this page
+        // rather than leaving a skeleton on screen. The socket below will
+        // reconcile as soon as there is a connection again.
+        if (cancelled) return;
+        await local.whenSynced;
+        if (cancelled) return;
+        setSaveStatus('offline');
+        setConnection('disconnected');
+        setLoading(false);
+      }
       if (cancelled) return;
-      if (full.ydoc_state) {
+      if (full?.ydoc_state) {
         try {
           Y.applyUpdate(ydoc, base64ToUint8Array(full.ydoc_state));
         } catch {
           /* corrupt/absent state — start fresh, WS sync will reconcile */
         }
       }
-      pageContentRef.current = full.content as Record<string, unknown>;
-      setPage(full);
-      setLoading(false);
+      if (full) {
+        pageContentRef.current = full.content as Record<string, unknown>;
+        setPage(full);
+        setLoading(false);
+      }
       if (cancelled) return;
 
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
