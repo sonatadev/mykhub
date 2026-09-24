@@ -15,6 +15,7 @@ import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
+import { IndexeddbPersistence } from 'y-indexeddb';
 import { ResizableImage } from './ImageExtension';
 import { editorExtensions, SlashCommands } from './extensions';
 import { getToken } from '@/lib/api';
@@ -48,8 +49,10 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
 
   const ydoc = useMemo(() => new Y.Doc(), [pageId]);
   const providerRef = useRef<WebsocketProvider | null>(null);
+  const localRef = useRef<IndexeddbPersistence | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout>>();
   const lastLocalEditAt = useRef(0);
+  const pendingSave = useRef(false);
   const seededRef = useRef(false);
   const pageContentRef = useRef<Record<string, unknown> | null>(null);
   const [providerReady, setProviderReady] = useState(false);
@@ -60,6 +63,12 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
     seededRef.current = false;
     pageContentRef.current = null;
     setProviderReady(false);
+
+    // Keep a copy of the document in the browser. Yjs merges it with
+    // whatever the server has, so notes written while the wifi was down
+    // survive a reload and sync themselves once it comes back.
+    const local = new IndexeddbPersistence(`mykhub-page-${pageId}`, ydoc);
+    localRef.current = local;
 
     (async () => {
       // Fetch and apply the REST snapshot's ydoc_state *before* opening the
@@ -127,6 +136,8 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
       cancelled = true;
       providerRef.current?.destroy();
       providerRef.current = null;
+      localRef.current?.destroy();
+      localRef.current = null;
       ydoc.destroy();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,16 +192,10 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
       },
       onUpdate: () => {
         lastLocalEditAt.current = Date.now();
+        pendingSave.current = true;
         setSaveStatus('saving');
         clearTimeout(saveTimer.current);
-        saveTimer.current = setTimeout(async () => {
-          try {
-            await pagesApi.update(pageId, { content: editorRef.current?.getJSON() });
-            setSaveStatus('saved');
-          } catch {
-            setSaveStatus('offline');
-          }
-        }, 1000);
+        saveTimer.current = setTimeout(() => void flushSave(), 1000);
       },
     },
     [ydoc, providerReady]
@@ -198,6 +203,39 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
 
   const editorRef = useRef(editor);
   editorRef.current = editor;
+
+  async function flushSave() {
+    if (!editorRef.current) return;
+    try {
+      await pagesApi.update(pageId, { content: editorRef.current.getJSON() });
+      pendingSave.current = false;
+      setSaveStatus('saved');
+    } catch {
+      setSaveStatus('offline');
+    }
+  }
+  const flushSaveRef = useRef(flushSave);
+  flushSaveRef.current = flushSave;
+
+  useEffect(() => {
+    // Retry on a timer rather than only on the next keystroke: someone who
+    // stops typing at the end of a lesson would otherwise never see their
+    // last edits leave the browser.
+    const retry = setInterval(() => {
+      if (pendingSave.current) void flushSaveRef.current();
+    }, 6000);
+    return () => clearInterval(retry);
+  }, []);
+
+  useEffect(() => {
+    function warn(event: BeforeUnloadEvent) {
+      if (!pendingSave.current) return;
+      event.preventDefault();
+      event.returnValue = '';
+    }
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, []);
 
   async function insertUploadedImage(file: File) {
     if (!editorRef.current) return;
