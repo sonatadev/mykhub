@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Node, mergeAttributes, nodeInputRule } from '@tiptap/core';
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import type { NodeViewProps } from '@tiptap/react';
@@ -43,6 +43,14 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
   // An empty block has nothing to show, so it opens straight in edit mode.
   const [editing, setEditing] = useState(() => editor.isEditable && latex.trim() === '');
   const [draft, setDraft] = useState(latex);
+  // What the formula held when this editing session began, so a skeleton
+  // nobody typed into can be told apart from one that was filled in.
+  const openedWith = useRef(latex);
+
+  useEffect(() => {
+    if (editing) openedWith.current = draft;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing]);
 
   useEffect(() => {
     // A block inserted from the toolbar or the slash menu opens for editing
@@ -62,7 +70,13 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
     if (!editing) setDraft(latex);
   }, [latex, editing]);
 
-  const html = useMemo(() => renderMath(draft.trim() || '\\square', true), [draft]);
+  const source = stripPlaceholders(draft).trim();
+  // An empty formula is a box to click on while writing, and nothing at all
+  // once the page is only being read.
+  const html = useMemo(
+    () => (source ? renderMath(source, true) : editor.isEditable ? renderMath('\\square', true) : ''),
+    [source, editor.isEditable]
+  );
 
   function commit(next: string) {
     setDraft(next);
@@ -71,6 +85,15 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
 
   function leave(placeCursorAfter: boolean) {
     setEditing(false);
+    // A formula left empty — opened by accident, abandoned, or a skeleton
+    // nothing was typed into — would print as a gap on the page and a stray
+    // box on a shared one.
+    const untouched = draft === openedWith.current && draft.includes('\\placeholder');
+    if (!source || untouched) {
+      deleteNode();
+      if (placeCursorAfter) editor.commands.focus();
+      return;
+    }
     // Holes the user never filled are stored as empty groups: KaTeX renders
     // those, whereas MathLive's `\\placeholder{}` would be an error.
     const cleaned = stripPlaceholders(draft);
@@ -93,7 +116,7 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
   return (
     <NodeViewWrapper
       as="div"
-      className={cn('math-block', selected && 'math-block--selected')}
+      className={cn('math-block', selected && 'math-block--selected', !html && 'math-block--blank')}
       data-type="math-block"
     >
       {!editing && (

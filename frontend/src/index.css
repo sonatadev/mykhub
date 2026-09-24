@@ -264,6 +264,10 @@
 .math-block:focus-within {
   @apply border-border bg-accent/30;
 }
+.math-block--blank {
+  /* An empty formula on a page that is only being read: show nothing. */
+  display: none;
+}
 .math-block__render {
   @apply overflow-x-auto overflow-y-hidden py-1 text-center;
 }
