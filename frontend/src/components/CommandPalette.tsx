@@ -5,7 +5,7 @@ import { FileText, Search, Sigma } from 'lucide-react';
 import type { MathfieldElement } from 'mathlive';
 import { useWorkspaceStore } from '@/lib/store/workspace';
 import { useUiStore } from '@/lib/store/ui';
-import { MATH_SYMBOLS, symbolPreview, type MathSymbol } from '@/lib/mathSymbols';
+import { MATH_SYMBOLS, insertSymbol, symbolPreview, type MathSymbol } from '@/lib/mathSymbols';
 import { renderMath } from '@/components/editor/extensions/MathBlock';
 import { activeMathfield, holdMathfield, insertLatex } from '@/lib/mathfield';
 import IconGlyph from '@/components/IconGlyph';
@@ -155,11 +155,11 @@ export default function CommandPalette() {
       insertLatex(field, entry.symbol.latex);
       return;
     }
-    // No formula open: wrap it in inline maths so it renders instead of
-    // sitting in the text as a backslash command.
+    // No formula open: a skeleton opens one, a glyph goes inline — either
+    // way it renders, instead of sitting in the text as a backslash command.
     const editor = useUiStore.getState().activeEditor;
     close(false);
-    editor?.commands.insertInlineMath(entry.symbol.latex.trim());
+    if (editor) insertSymbol(editor, entry.symbol.latex);
   }
 
   if (!open) return null;
@@ -230,7 +230,7 @@ export default function CommandPalette() {
                   <>
                     <span
                       className="command-palette__icon command-palette__preview"
-                      dangerouslySetInnerHTML={{ __html: renderMath(symbolPreview(entry.symbol.latex), false) }}
+                      dangerouslySetInnerHTML={{ __html: renderMath(symbolPreview(entry.symbol), false) }}
                     />
                     <span className="command-palette__label">{entry.symbol.label}</span>
                     <span className="command-palette__meta">{entry.symbol.group}</span>

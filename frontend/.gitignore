@@ -1,3 +1,7 @@
 node_modules/
 dist/
 *.tsbuildinfo
+
+# Scratch harnesses for driving the editor in a browser during development
+dev-*.html
+src/dev-*.tsx

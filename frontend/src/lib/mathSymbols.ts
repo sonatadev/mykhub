@@ -4,11 +4,15 @@
  * into (MathLive placeholders) — so `frac` lands you on the numerator.
  */
 
+import type { Editor } from '@tiptap/core';
+
 export interface MathSymbol {
   label: string;
   latex: string;
   group: string;
   keywords: string[];
+  /** Shown in the picker when the bare LaTeX would render as an empty shell. */
+  preview?: string;
 }
 
 export const MATH_SYMBOLS: MathSymbol[] = [
@@ -16,14 +20,14 @@ export const MATH_SYMBOLS: MathSymbol[] = [
   { label: 'Frazione', latex: '\\frac{}{}', group: 'Strutture', keywords: ['frac', 'frazione', 'divisione', '/'] },
   { label: 'Radice quadrata', latex: '\\sqrt{}', group: 'Strutture', keywords: ['sqrt', 'radice', 'root'] },
   { label: 'Radice n-esima', latex: '\\sqrt[]{}', group: 'Strutture', keywords: ['sqrt', 'radice', 'nth', 'root'] },
-  { label: 'Potenza', latex: '^{}', group: 'Strutture', keywords: ['pow', 'potenza', 'esponente', 'apice', '^'] },
-  { label: 'Pedice', latex: '_{}', group: 'Strutture', keywords: ['sub', 'pedice', 'indice', '_'] },
-  { label: 'Parentesi tonde', latex: '\\left(\\right)', group: 'Strutture', keywords: ['paren', 'tonde', '('] },
-  { label: 'Parentesi quadre', latex: '\\left[\\right]', group: 'Strutture', keywords: ['bracket', 'quadre', '['] },
-  { label: 'Parentesi graffe', latex: '\\left\\{\\right\\}', group: 'Strutture', keywords: ['brace', 'graffe', '{'] },
-  { label: 'Valore assoluto', latex: '\\left|\\right|', group: 'Strutture', keywords: ['abs', 'assoluto', 'modulo', '|'] },
-  { label: 'Norma', latex: '\\left\\|\\right\\|', group: 'Strutture', keywords: ['norm', 'norma'] },
-  { label: 'Sistema', latex: '\\begin{cases}  \\\\  \\end{cases}', group: 'Strutture', keywords: ['cases', 'sistema', 'graffa'] },
+  { label: 'Potenza', latex: '^{}', group: 'Strutture', keywords: ['pow', 'potenza', 'esponente', 'apice', '^'], preview: 'x^{\\square}' },
+  { label: 'Pedice', latex: '_{}', group: 'Strutture', keywords: ['sub', 'pedice', 'indice', '_'], preview: 'x_{\\square}' },
+  { label: 'Parentesi tonde', latex: '\\left(\\right)', group: 'Strutture', keywords: ['paren', 'tonde', '('], preview: '(\\square)' },
+  { label: 'Parentesi quadre', latex: '\\left[\\right]', group: 'Strutture', keywords: ['bracket', 'quadre', '['], preview: '[\\square]' },
+  { label: 'Parentesi graffe', latex: '\\left\\{\\right\\}', group: 'Strutture', keywords: ['brace', 'graffe', '{'], preview: '\\{\\square\\}' },
+  { label: 'Valore assoluto', latex: '\\left|\\right|', group: 'Strutture', keywords: ['abs', 'assoluto', 'modulo', '|'], preview: '|\\square|' },
+  { label: 'Norma', latex: '\\left\\|\\right\\|', group: 'Strutture', keywords: ['norm', 'norma'], preview: '\\|\\square\\|' },
+  { label: 'Sistema', latex: '\\begin{cases}  \\\\  \\end{cases}', group: 'Strutture', keywords: ['cases', 'sistema', 'graffa'], preview: '\\begin{cases}\\square\\\\\\square\\end{cases}' },
   { label: 'Matrice 2×2', latex: '\\begin{pmatrix}  &  \\\\  &  \\end{pmatrix}', group: 'Strutture', keywords: ['matrix', 'matrice', 'pmatrix'] },
   { label: 'Binomiale', latex: '\\binom{}{}', group: 'Strutture', keywords: ['binom', 'binomiale', 'coefficiente'] },
 
@@ -32,23 +36,23 @@ export const MATH_SYMBOLS: MathSymbol[] = [
   { label: 'Integrale indefinito', latex: '\\int', group: 'Analisi', keywords: ['int', 'integrale', 'indefinito'] },
   { label: 'Integrale doppio', latex: '\\iint_{}', group: 'Analisi', keywords: ['iint', 'doppio', 'double'] },
   { label: 'Integrale di linea', latex: '\\oint_{}', group: 'Analisi', keywords: ['oint', 'linea', 'circuitazione'] },
-  { label: 'Sommatoria', latex: '\\sum_{}^{}', group: 'Analisi', keywords: ['sum', 'somma', 'sommatoria', 'sigma'] },
+  { label: 'Sommatoria', latex: '\\sum_{}^{}', group: 'Analisi', keywords: ['sum', 'somma', 'sommatoria', 'serie', 'sigma'] },
   { label: 'Produttoria', latex: '\\prod_{}^{}', group: 'Analisi', keywords: ['prod', 'produttoria', 'product'] },
   { label: 'Limite', latex: '\\lim_{ \\to }', group: 'Analisi', keywords: ['lim', 'limite', 'limit'] },
   { label: 'Derivata', latex: '\\frac{d}{dx}', group: 'Analisi', keywords: ['der', 'derivata', 'derivative'] },
   { label: 'Derivata parziale', latex: '\\frac{\\partial }{\\partial }', group: 'Analisi', keywords: ['partial', 'parziale', 'derivata'] },
   { label: 'Nabla / gradiente', latex: '\\nabla ', group: 'Analisi', keywords: ['nabla', 'gradiente', 'grad'] },
   { label: 'Infinito', latex: '\\infty ', group: 'Analisi', keywords: ['inf', 'infinito', 'infinity'] },
-  { label: 'Differenziale', latex: '\\,d', group: 'Analisi', keywords: ['dx', 'differenziale', 'd'] },
+  { label: 'Differenziale', latex: '\\,d', group: 'Analisi', keywords: ['dx', 'differenziale', 'd'], preview: 'dx' },
 
   // Functions
   { label: 'Seno', latex: '\\sin', group: 'Funzioni', keywords: ['sin', 'seno'] },
   { label: 'Coseno', latex: '\\cos', group: 'Funzioni', keywords: ['cos', 'coseno'] },
   { label: 'Tangente', latex: '\\tan', group: 'Funzioni', keywords: ['tan', 'tangente'] },
   { label: 'Arcotangente', latex: '\\arctan', group: 'Funzioni', keywords: ['arctan', 'arcotangente'] },
-  { label: 'Logaritmo', latex: '\\log_{}', group: 'Funzioni', keywords: ['log', 'logaritmo'] },
+  { label: 'Logaritmo', latex: '\\log_{}', group: 'Funzioni', keywords: ['log', 'logaritmo'], preview: '\\log_{\\square}' },
   { label: 'Logaritmo naturale', latex: '\\ln', group: 'Funzioni', keywords: ['ln', 'naturale', 'neperiano'] },
-  { label: 'Esponenziale', latex: 'e^{}', group: 'Funzioni', keywords: ['exp', 'esponenziale', 'e'] },
+  { label: 'Esponenziale', latex: 'e^{}', group: 'Funzioni', keywords: ['exp', 'esponenziale', 'e'], preview: 'e^{\\square}' },
   { label: 'Massimo', latex: '\\max', group: 'Funzioni', keywords: ['max', 'massimo'] },
   { label: 'Minimo', latex: '\\min', group: 'Funzioni', keywords: ['min', 'minimo'] },
 
@@ -83,13 +87,13 @@ export const MATH_SYMBOLS: MathSymbol[] = [
   { label: 'Per (×)', latex: '\\times ', group: 'Operatori', keywords: ['times', 'per', 'croce', 'x'] },
   { label: 'Diviso', latex: '\\div ', group: 'Operatori', keywords: ['div', 'diviso'] },
   { label: 'Più o meno', latex: '\\pm ', group: 'Operatori', keywords: ['pm', 'piu meno', '+-'] },
-  { label: 'Gradi', latex: '^{\\circ}', group: 'Operatori', keywords: ['gradi', 'degree', 'circ'] },
+  { label: 'Gradi', latex: '^{\\circ}', group: 'Operatori', keywords: ['gradi', 'degree', 'circ'], preview: '90^{\\circ}' },
   { label: 'Angolo', latex: '\\angle ', group: 'Operatori', keywords: ['angle', 'angolo'] },
   { label: 'Perpendicolare', latex: '\\perp ', group: 'Operatori', keywords: ['perp', 'perpendicolare', 'ortogonale'] },
   { label: 'Parallelo', latex: '\\parallel ', group: 'Operatori', keywords: ['parallel', 'parallelo'] },
-  { label: 'Vettore', latex: '\\vec{}', group: 'Operatori', keywords: ['vec', 'vettore'] },
-  { label: 'Cappello', latex: '\\hat{}', group: 'Operatori', keywords: ['hat', 'cappello', 'versore'] },
-  { label: 'Media (barra)', latex: '\\overline{}', group: 'Operatori', keywords: ['bar', 'media', 'overline'] },
+  { label: 'Vettore', latex: '\\vec{}', group: 'Operatori', keywords: ['vec', 'vettore'], preview: '\\vec{v}' },
+  { label: 'Cappello', latex: '\\hat{}', group: 'Operatori', keywords: ['hat', 'cappello', 'versore'], preview: '\\hat{u}' },
+  { label: 'Media (barra)', latex: '\\overline{}', group: 'Operatori', keywords: ['bar', 'media', 'overline'], preview: '\\overline{x}' },
 
   // Greek
   { label: 'alfa', latex: '\\alpha ', group: 'Greco', keywords: ['alpha', 'alfa'] },
@@ -119,7 +123,39 @@ export const MATH_SYMBOLS: MathSymbol[] = [
   { label: 'Omega (maiuscolo)', latex: '\\Omega ', group: 'Greco', keywords: ['Omega', 'ohm'] },
 ];
 
-/** What the preview renders: holes become visible squares. */
-export function symbolPreview(latex: string) {
-  return latex.replace(/\{\}/g, '{\\square}').replace(/\[\]/g, '[\\square]');
+/** What the picker renders: holes become visible squares. */
+export function symbolPreview(symbol: MathSymbol) {
+  if (symbol.preview) return symbol.preview;
+  return symbol.latex.replace(/\{\}/g, '{\\square}').replace(/\[\]/g, '[\\square]');
+}
+
+/** Commands that build a structure around something, rather than a glyph. */
+const STRUCTURES = /^\\(frac|sqrt|binom|begin|int|iint|oint|sum|prod|lim)\b/;
+
+/** A skeleton to fill in, as opposed to a single glyph like α or ≤. */
+export function isTemplate(latex: string) {
+  return /\{\}|\[\]/.test(latex) || STRUCTURES.test(latex.trim());
+}
+
+/**
+ * Puts a symbol into the document from outside a formula. Skeletons open a
+ * display formula in the maths field, caret in the first hole; a lone glyph
+ * goes inline, with the caret left after it so it renders straight away
+ * rather than showing its source.
+ */
+export function insertSymbol(editor: Editor, latex: string) {
+  if (isTemplate(latex)) return editor.chain().focus().insertMathTemplate(latex).run();
+  // The trailing space matters: inline maths shows its own source while the
+  // caret is still between the dollars, so the caret has to end up past them.
+  return editor.chain().focus().insertContent(`$${latex.trim()}$ `).run();
+}
+
+/** The catalogue split into its groups, in catalogue order. */
+export function symbolGroups(): Array<[string, MathSymbol[]]> {
+  const groups = new Map<string, MathSymbol[]>();
+  for (const symbol of MATH_SYMBOLS) {
+    if (!groups.has(symbol.group)) groups.set(symbol.group, []);
+    groups.get(symbol.group)!.push(symbol);
+  }
+  return [...groups.entries()];
 }

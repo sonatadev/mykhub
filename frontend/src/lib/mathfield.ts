@@ -34,13 +34,21 @@ export function activeMathfield(): MathfieldElement | null {
 }
 
 /**
+ * Turns the empty groups a skeleton is written with (`\\frac{}{}`) into
+ * MathLive placeholders, the holes the caret jumps between with Tab.
+ */
+export function toPlaceholders(latex: string) {
+  return latex.replace(/\{\}/g, '{\\placeholder{}}').replace(/\[\]/g, '[\\placeholder{}]');
+}
+
+/**
  * Inserts LaTeX at the caret. Empty groups written for the plain-text editor
  * (`\frac{}{}`) become MathLive placeholders, so the caret lands in the first
  * hole and Tab walks to the next one.
  */
 export function insertLatex(field: MathfieldElement, latex: string) {
   field.focus();
-  field.insert(latex.replace(/\{\}/g, '{#?}'), {
+  field.insert(toPlaceholders(latex), {
     focus: true,
     feedback: false,
     selectionMode: 'placeholder',
@@ -65,4 +73,14 @@ export function holdMathfield() {
 
 export function mathfieldHeld() {
   return holds > 0;
+}
+
+/**
+ * MathLive marks the holes it left behind with `\placeholder{}`, which KaTeX
+ * does not know: a formula stored that way would render as an error in the
+ * resting view, the share pages and the .tex export. Holes left empty go back
+ * to being plain empty groups.
+ */
+export function stripPlaceholders(latex: string) {
+  return latex.replace(/\\placeholder(?:\[[^\]]*\])?\{([^{}]*)\}/g, '$1');
 }

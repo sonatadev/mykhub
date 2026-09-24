@@ -10,13 +10,13 @@ import {
   ListChecks,
   ImageIcon,
   FunctionSquare,
-  Sigma,
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Separator } from '@/components/ui/separator';
 import TableGridPopover from './TableGridPopover';
 import LinkPopover from './LinkPopover';
 import TheoremMenu from './TheoremMenu';
+import MathSymbolMenu from './MathSymbolMenu';
 
 export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => void }) {
   return (
@@ -110,15 +110,7 @@ export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPic
       >
         <FunctionSquare />
       </Toggle>
-      <Toggle
-        size="sm"
-        pressed={editor.isActive('mathBlock')}
-        onPressedChange={() => editor.chain().focus().setMathBlock().run()}
-        aria-label="Formula in display (Ctrl+Shift+M)"
-        title="Formula in display — Ctrl+Shift+M"
-      >
-        <Sigma />
-      </Toggle>
+      <MathSymbolMenu editor={editor} />
       <TheoremMenu editor={editor} />
     </div>
   );

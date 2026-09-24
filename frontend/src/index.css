@@ -612,3 +612,26 @@
 .command-palette__footer {
   @apply flex items-center gap-3 border-t border-border px-3.5 py-2 text-[11px] text-muted-foreground;
 }
+
+/* Toolbar maths panel */
+.math-symbols {
+  @apply w-[19rem] p-1;
+}
+.math-symbols__scroll {
+  @apply max-h-[19rem] overflow-y-auto;
+}
+.math-symbols__group {
+  @apply px-2 pb-1 pt-2 text-[11px] uppercase tracking-wide text-muted-foreground;
+}
+.math-symbols__grid {
+  @apply grid grid-cols-6 gap-0.5;
+}
+.math-symbols__tile {
+  @apply flex h-9 items-center justify-center overflow-hidden p-0 text-foreground;
+}
+.math-symbols__tile .katex {
+  font-size: 0.95em;
+}
+.math-symbols__hint {
+  @apply border-t border-border px-2 pt-1.5 text-[11px] text-muted-foreground;
+}

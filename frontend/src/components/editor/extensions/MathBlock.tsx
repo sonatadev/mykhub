@@ -4,6 +4,7 @@ import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import type { NodeViewProps } from '@tiptap/react';
 import katex from 'katex';
 import MathField from '../MathField';
+import { stripPlaceholders, toPlaceholders } from '@/lib/mathfield';
 import { cn } from '@/lib/utils';
 
 export const KATEX_OPTIONS: katex.KatexOptions = {
@@ -16,7 +17,7 @@ export const KATEX_OPTIONS: katex.KatexOptions = {
 
 export function renderMath(latex: string, displayMode: boolean) {
   try {
-    return katex.renderToString(latex, { ...KATEX_OPTIONS, displayMode });
+    return katex.renderToString(stripPlaceholders(latex), { ...KATEX_OPTIONS, displayMode });
   } catch {
     // KaTeX only throws here for options errors; the formula itself is
     // rendered with errorColor thanks to throwOnError: false.
@@ -31,6 +32,8 @@ declare module '@tiptap/core' {
       setMathBlock: (latex?: string) => ReturnType;
       /** Wrap the selection (or an empty spot) in inline `$…$` delimiters. */
       insertInlineMath: (latex?: string) => ReturnType;
+      /** Open a fresh display formula on a skeleton, ready to be filled in. */
+      insertMathTemplate: (latex: string) => ReturnType;
     };
   }
 }
@@ -68,6 +71,13 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
 
   function leave(placeCursorAfter: boolean) {
     setEditing(false);
+    // Holes the user never filled are stored as empty groups: KaTeX renders
+    // those, whereas MathLive's `\\placeholder{}` would be an error.
+    const cleaned = stripPlaceholders(draft);
+    if (cleaned !== draft) {
+      setDraft(cleaned);
+      updateAttributes({ latex: cleaned });
+    }
     if (!placeCursorAfter) return;
     const pos = typeof getPos === 'function' ? getPos() : null;
     if (pos == null) {
@@ -186,6 +196,16 @@ export const MathBlock = Node.create({
         ({ chain }) => {
           this.storage.autoFocus = true;
           return chain().insertContent({ type: this.name, attrs: { latex } }).run();
+        },
+
+      insertMathTemplate:
+        (latex) =>
+        ({ chain }) => {
+          // The skeleton goes straight into the node, holes and all: the field
+          // then opens on it and puts the caret in the first one. Handing it
+          // over after the fact raced with ProseMirror redrawing the node.
+          this.storage.autoFocus = true;
+          return chain().insertContent({ type: this.name, attrs: { latex: toPlaceholders(latex) } }).run();
         },
 
       insertInlineMath:

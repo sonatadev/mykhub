@@ -31,7 +31,10 @@ export interface SlashItem {
   run: (editor: Editor, range: Range, helpers: { pickImage: () => void }) => void;
 }
 
-/** Insert a display formula pre-filled with a skeleton to fill in. */
+/**
+ * Insert a display formula pre-filled with a skeleton. Empty `{}` groups
+ * become holes the caret lands in and Tab walks between.
+ */
 function mathTemplate(title: string, hint: string, latex: string, keywords: string[], icon: LucideIcon): SlashItem {
   return {
     title,
@@ -39,7 +42,7 @@ function mathTemplate(title: string, hint: string, latex: string, keywords: stri
     group: 'Matematica',
     keywords,
     icon,
-    run: (editor, range) => editor.chain().focus().deleteRange(range).setMathBlock(latex).run(),
+    run: (editor, range) => editor.chain().focus().deleteRange(range).insertMathTemplate(latex).run(),
   };
 }
 
@@ -153,29 +156,29 @@ export const SLASH_ITEMS: SlashItem[] = [
     icon: Sigma,
     run: (editor, range) => editor.chain().focus().deleteRange(range).setMathBlock().run(),
   },
-  mathTemplate('Limite', 'lim per x → x₀', '\\lim_{x \\to x_0} f(x) = \\ell', ['limite', 'lim'], TrendingUp),
-  mathTemplate('Integrale', 'Integrale definito', '\\int_{a}^{b} f(x)\\,dx', ['integrale', 'int'], Radical),
-  mathTemplate('Sommatoria', 'Serie o somma finita', '\\sum_{n=1}^{\\infty} a_n', ['somma', 'serie', 'sum'], Sigma),
+  mathTemplate('Limite', 'lim per x → x₀', '\\lim_{{} \\to {}} {}', ['limite', 'lim'], TrendingUp),
+  mathTemplate('Integrale', 'Integrale definito', '\\int_{}^{} {}\\,dx', ['integrale', 'int'], Radical),
+  mathTemplate('Sommatoria', 'Serie o somma finita', '\\sum_{}^{} {}', ['somma', 'serie', 'sum'], Sigma),
   mathTemplate('Derivata', 'Rapporto incrementale', "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}", ['derivata', 'diff'], FunctionSquare),
-  mathTemplate('Frazione', 'a fratto b', '\\frac{a}{b}', ['frazione', 'frac'], Braces),
+  mathTemplate('Frazione', 'a fratto b', '\\frac{}{}', ['frazione', 'frac'], Braces),
   mathTemplate(
     'Matrice',
     'Matrice 2 × 2',
-    '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}',
+    '\\begin{pmatrix} {} & {} \\\\ {} & {} \\end{pmatrix}',
     ['matrice', 'matrix', 'pmatrix'],
     Grid3x3
   ),
   mathTemplate(
     'Sistema',
     'Sistema di equazioni',
-    '\\begin{cases} x + y = 1 \\\\ x - y = 0 \\end{cases}',
+    '\\begin{cases} {} \\\\ {} \\end{cases}',
     ['sistema', 'cases', 'graffa'],
     Brackets
   ),
   mathTemplate(
     'Passaggi allineati',
     'Catena di uguaglianze',
-    '\\begin{aligned} f(x) &= x^2 \\\\ &= x \\cdot x \\end{aligned}',
+    '\\begin{aligned} {} &= {} \\\\ &= {} \\end{aligned}',
     ['aligned', 'passaggi', 'allineato'],
     Brackets
   ),

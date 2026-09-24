@@ -31,6 +31,11 @@ export default function MathField({ value, onChange, onLeave }: Props) {
   const handlers = useRef({ onChange, onLeave });
   handlers.current = { onChange, onLeave };
   const initial = useRef(value);
+  // The last LaTeX the field and the props agreed on. Anything else in the
+  // props is a change from outside (a collaborator) worth pushing in; without
+  // this, the field's own edits would be echoed straight back at it, a render
+  // behind, and wipe what was just typed.
+  const settled = useRef(value);
 
   useEffect(() => {
     let mf: MathfieldElement | null = null;
@@ -50,14 +55,24 @@ export default function MathField({ value, onChange, onLeave }: Props) {
       mf.menuItems = [];
       mf.value = initial.current;
 
-      mf.addEventListener('input', () => handlers.current.onChange(mf!.value));
+      mf.addEventListener('input', () => {
+        settled.current = mf!.value;
+        handlers.current.onChange(mf!.value);
+      });
 
       mf.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' || (event.key === 'Enter' && (event.metaKey || event.ctrlKey))) {
-          event.preventDefault();
-          event.stopPropagation();
-          handlers.current.onLeave(true);
-        }
+        const done =
+          event.key === 'Escape' ||
+          // Enter finishes the formula and moves on, the way it does in the
+          // rest of the editor — except inside a matrix or a system, where
+          // MathLive needs it to start the next row.
+          (event.key === 'Enter' &&
+            !event.shiftKey &&
+            (event.metaKey || event.ctrlKey || !mf!.value.includes('\\begin{')));
+        if (!done) return;
+        event.preventDefault();
+        event.stopPropagation();
+        handlers.current.onLeave(true);
       });
 
       // Arrowing or tabbing past the last character walks out of the formula
@@ -78,7 +93,15 @@ export default function MathField({ value, onChange, onLeave }: Props) {
       });
 
       mf.focus();
-      mf.executeCommand('moveToMathfieldEnd');
+      // A formula opened on a skeleton starts in its first hole; one being
+      // revisited starts at the end, where typing continues naturally.
+      if (mf.value.includes('\\placeholder')) {
+        mf.executeCommand('moveToMathfieldStart');
+        // The caret sits visibly inside the first hole; Tab walks the rest.
+        mf.executeCommand('moveToNextPlaceholder');
+      } else {
+        mf.executeCommand('moveToMathfieldEnd');
+      }
       setField(mf);
     });
 
@@ -91,7 +114,9 @@ export default function MathField({ value, onChange, onLeave }: Props) {
   useEffect(() => {
     // Edits arriving from another collaborator land in the node attributes;
     // mirror them without echoing an `input` event back out.
-    if (field && field.value !== value) field.setValue(value, { silenceNotifications: true });
+    if (!field || value === settled.current) return;
+    settled.current = value;
+    if (field.value !== value) field.setValue(value, { silenceNotifications: true });
   }, [field, value]);
 
   return <div ref={hostRef} className="math-field-host" />;
