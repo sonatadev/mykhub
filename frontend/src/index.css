@@ -279,6 +279,13 @@
 .math-field-host {
   @apply w-full rounded-lg bg-muted px-3 py-2.5;
 }
+.math-field-host,
+.math-field-host math-field {
+  /* ProseMirror marks an atom node unselectable, and MathLive reads that at
+     mount time: with `user-select: none` it never wires up its pointer
+     handling, so clicking a digit could not move the caret. */
+  @apply select-text;
+}
 .math-field-host math-field {
   @apply w-full bg-transparent text-foreground outline-none;
   /* 16px keeps mobile browsers from zooming in when the field takes focus. */
@@ -317,8 +324,17 @@
     display: inline;
   }
 }
+.math-block__actions {
+  @apply flex items-center;
+}
 .math-block__done {
   @apply rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground;
+}
+.math-block__delete {
+  @apply mr-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-muted-foreground;
+}
+.math-block__delete:hover {
+  @apply bg-destructive/10 text-destructive;
 }
 @media (pointer: coarse) {
   .math-block__done {
@@ -334,6 +350,23 @@
 }
 .theorem-block__head {
   @apply mb-1 flex flex-wrap items-baseline gap-x-1 font-semibold text-primary;
+}
+.theorem-block__delete {
+  @apply ml-auto self-center rounded p-1 text-muted-foreground opacity-0 transition-opacity;
+}
+.theorem-block:hover .theorem-block__delete,
+.theorem-block:focus-within .theorem-block__delete,
+.theorem-block__delete:focus-visible {
+  @apply opacity-100;
+}
+.theorem-block__delete:hover {
+  @apply bg-destructive/10 text-destructive;
+}
+@media (pointer: coarse) {
+  /* Nothing hovers on a phone, so the button is simply always there. */
+  .theorem-block__delete {
+    @apply opacity-70;
+  }
 }
 .theorem-block__label::before {
   content: attr(data-label);

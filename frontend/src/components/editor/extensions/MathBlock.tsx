@@ -35,7 +35,7 @@ declare module '@tiptap/core' {
   }
 }
 
-function MathBlockView({ node, updateAttributes, editor, getPos, selected }: NodeViewProps) {
+function MathBlockView({ node, updateAttributes, editor, getPos, selected, deleteNode }: NodeViewProps) {
   const latex = (node.attrs.latex as string) ?? '';
   // An empty block has nothing to show, so it opens straight in edit mode.
   const [editing, setEditing] = useState(() => editor.isEditable && latex.trim() === '');
@@ -102,12 +102,23 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected }: Nod
       />
       )}
       {editing && (
-        <div className="math-block__editor">
+        <div className="math-block__editor" draggable={false} onDragStart={(e) => e.preventDefault()}>
           <MathField value={draft} onChange={commit} onLeave={leave} />
           <div className="math-block__footer">
             <span className="math-block__hint">
               Formula<span className="math-block__hint-key"> · Esc per chiudere</span>
             </span>
+            <div className="math-block__actions">
+            <button
+              type="button"
+              className="math-block__delete"
+              aria-label="Elimina la formula"
+              onPointerDown={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => deleteNode()}
+            >
+              Elimina
+            </button>
             <button
               type="button"
               className="math-block__done"
@@ -118,6 +129,7 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected }: Nod
             >
               Fatto
             </button>
+            </div>
           </div>
         </div>
       )}
@@ -155,7 +167,16 @@ export const MathBlock = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(MathBlockView);
+    return ReactNodeViewRenderer(MathBlockView, {
+      // While a formula is open, every click inside it belongs to the maths
+      // field — clicking a digit moves the caret there. Without this,
+      // ProseMirror treats the click as "select this atom", pulls focus back
+      // into the document and the formula snaps shut.
+      stopEvent: ({ event }) => {
+        const target = event.target as HTMLElement | null;
+        return !!target?.closest?.('.math-block__editor');
+      },
+    });
   },
 
   addCommands() {

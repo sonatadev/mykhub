@@ -1,4 +1,5 @@
 import { Node, mergeAttributes, findParentNode } from '@tiptap/core';
+import { Trash2 } from 'lucide-react';
 import { TextSelection } from '@tiptap/pm/state';
 import { NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import type { NodeViewProps } from '@tiptap/react';
@@ -50,11 +51,13 @@ declare module '@tiptap/core' {
       setTheoremBlock: (variant: TheoremVariant) => ReturnType;
       toggleTheoremBlock: (variant: TheoremVariant) => ReturnType;
       unsetTheoremBlock: () => ReturnType;
+      /** Removes the environment together with everything inside it. */
+      deleteTheoremBlock: () => ReturnType;
     };
   }
 }
 
-function TheoremView({ node, updateAttributes, editor }: NodeViewProps) {
+function TheoremView({ node, updateAttributes, editor, deleteNode }: NodeViewProps) {
   const variant = variantOf(node.attrs.variant);
   const { label, numbered } = THEOREM_VARIANTS[variant];
   const title = (node.attrs.title as string) ?? '';
@@ -94,6 +97,20 @@ function TheoremView({ node, updateAttributes, editor }: NodeViewProps) {
             </span>
             {title && <span className="theorem-block__paren">)</span>}
           </span>
+        )}
+        {editable && (
+          <button
+            type="button"
+            className="theorem-block__delete"
+            aria-label={`Elimina: ${label.toLowerCase()}`}
+            title="Elimina l'ambiente e il suo contenuto"
+            // Keep the caret where it is: a blur here would move the
+            // selection before the click lands.
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={() => deleteNode()}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
         )}
       </div>
       <NodeViewContent className="theorem-block__body" />
@@ -141,7 +158,14 @@ export const TheoremBlock = Node.create({
   },
 
   addNodeView() {
-    return ReactNodeViewRenderer(TheoremView);
+    return ReactNodeViewRenderer(TheoremView, {
+      // The heading is chrome, not text: its name field and delete button
+      // handle their own clicks, and ProseMirror should keep out of them.
+      stopEvent: ({ event }) => {
+        const target = event.target as HTMLElement | null;
+        return !!target?.closest?.('.theorem-block__head');
+      },
+    });
   },
 
   addCommands() {
@@ -189,6 +213,15 @@ export const TheoremBlock = Node.create({
             .insertContent({ type: this.name, attrs: { variant }, content: [{ type: 'paragraph' }] })
             .focus()
             .run();
+        },
+
+      deleteTheoremBlock:
+        () =>
+        ({ tr, state, dispatch }) => {
+          const found = findParentNode((node) => node.type.name === this.name)(state.selection);
+          if (!found) return false;
+          if (dispatch) tr.delete(found.pos, found.pos + found.node.nodeSize);
+          return true;
         },
 
       unsetTheoremBlock:

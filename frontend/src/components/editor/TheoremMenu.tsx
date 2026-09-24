@@ -43,6 +43,14 @@ export default function TheoremMenu({ editor }: { editor: Editor }) {
           onSelect={() => editor.chain().focus().unsetTheoremBlock().run()}
         >
           Rimuovi ambiente
+          <span className="ml-auto text-xs text-muted-foreground">tieni il testo</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          disabled={!active}
+          onSelect={() => editor.chain().focus().deleteTheoremBlock().run()}
+        >
+          Elimina ambiente
+          <span className="ml-auto text-xs text-muted-foreground">e il testo</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
