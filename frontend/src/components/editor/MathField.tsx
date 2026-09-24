@@ -40,6 +40,10 @@ export default function MathField({ value, onChange, onLeave }: Props) {
   useEffect(() => {
     let mf: MathfieldElement | null = null;
     let cancelled = false;
+    // Raised while the field is being walked on purpose: MathLive announces a
+    // "move-out" when a movement command runs past the end, and that must not
+    // be mistaken for the user arrowing out of the formula.
+    let navigating = false;
 
     loadMathfield().then((MathfieldElement) => {
       if (cancelled || !hostRef.current) return;
@@ -60,7 +64,36 @@ export default function MathField({ value, onChange, onLeave }: Props) {
         handlers.current.onChange(mf!.value);
       });
 
+      // Capture phase: MathLive handles keys on a sink inside its shadow root,
+      // which is deeper than this listener would otherwise reach.
       mf.addEventListener('keydown', (event) => {
+        if (event.key === 'Tab' && !event.metaKey && !event.ctrlKey) {
+          // Walk the holes, and wrap round at the end: Tab is for filling the
+          // formula in, not for leaving it half-written.
+          // Asking MathLive to step past the last hole makes it leave the
+          // field — and drop the next keystroke on the way out. So look
+          // ahead first, and wrap round by hand when there is nothing left.
+          const back = event.shiftKey;
+          event.preventDefault();
+          event.stopPropagation();
+          if (!mf!.value.includes('\\placeholder')) {
+            // Nothing left to fill in: Tab means "done with this formula".
+            handlers.current.onLeave(true);
+            return;
+          }
+          const ahead = back
+            ? mf!.getValue(0, mf!.position)
+            : mf!.getValue(mf!.position, mf!.lastOffset);
+          navigating = true;
+          if (ahead.includes('\\placeholder')) {
+            mf!.executeCommand(back ? 'moveToPreviousPlaceholder' : 'moveToNextPlaceholder');
+          } else {
+            mf!.executeCommand(back ? 'moveToMathfieldEnd' : 'moveToMathfieldStart');
+            mf!.executeCommand(back ? 'moveToPreviousPlaceholder' : 'moveToNextPlaceholder');
+          }
+          navigating = false;
+          return;
+        }
         const done =
           event.key === 'Escape' ||
           // Enter finishes the formula and moves on, the way it does in the
@@ -73,11 +106,12 @@ export default function MathField({ value, onChange, onLeave }: Props) {
         event.preventDefault();
         event.stopPropagation();
         handlers.current.onLeave(true);
-      });
+      }, true);
 
       // Arrowing or tabbing past the last character walks out of the formula
       // and back into the prose, the way it does inside the text editor.
       mf.addEventListener('move-out', (event) => {
+        if (navigating) return;
         const direction = (event as CustomEvent<{ direction: string }>).detail?.direction;
         handlers.current.onLeave(direction === 'forward' || direction === 'downward');
       });
@@ -86,7 +120,7 @@ export default function MathField({ value, onChange, onLeave }: Props) {
         // Give the browser a tick to settle: clicking the virtual keyboard or
         // a symbol key blurs the field for a moment without ending the edit.
         window.setTimeout(() => {
-          if (cancelled || !mf) return;
+          if (cancelled || !mf || navigating) return;
           if (document.activeElement === mf || focusIsInVirtualKeyboard() || mathfieldHeld()) return;
           handlers.current.onLeave(false);
         }, 0);
@@ -95,14 +129,31 @@ export default function MathField({ value, onChange, onLeave }: Props) {
       mf.focus();
       // A formula opened on a skeleton starts in its first hole; one being
       // revisited starts at the end, where typing continues naturally.
+      navigating = true;
       if (mf.value.includes('\\placeholder')) {
         mf.executeCommand('moveToMathfieldStart');
-        // The caret sits visibly inside the first hole; Tab walks the rest.
         mf.executeCommand('moveToNextPlaceholder');
+        // MathLive walks a big operator's exponent before its index, but an
+        // integral or a sum is written from its lower bound up.
+        if (/_\{\\placeholder\{\}\}\^\{\\placeholder\{\}\}/.test(mf.value)) {
+          mf.executeCommand('moveToNextPlaceholder');
+        }
       } else {
         mf.executeCommand('moveToMathfieldEnd');
       }
+      window.setTimeout(() => {
+        navigating = false;
+      }, 0);
       setField(mf);
+
+      // A dropdown that closes right after opening the formula can pull the
+      // focus away a frame later; take it back once the dust has settled.
+      requestAnimationFrame(() => {
+        if (!cancelled && mf && document.activeElement !== mf) mf.focus();
+      });
+      window.setTimeout(() => {
+        if (!cancelled && mf && document.activeElement !== mf) mf.focus();
+      }, 60);
     });
 
     return () => {
