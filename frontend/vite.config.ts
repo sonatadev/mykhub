@@ -21,6 +21,17 @@ export default defineConfig({
         share: path.resolve(__dirname, 'share.html'),
         shareSpace: path.resolve(__dirname, 'share-space.html'),
       },
+      output: {
+        // Libraries change far less often than the app does. Splitting them
+        // out means a deploy only invalidates the app's own chunk, which
+        // matters on a phone or a school network.
+        manualChunks: {
+          react: ['react', 'react-dom', 'react-router-dom'],
+          editor: ['@tiptap/core', '@tiptap/react', '@tiptap/starter-kit'],
+          collab: ['yjs', 'y-prosemirror', 'y-websocket'],
+          katex: ['katex'],
+        },
+      },
     },
   },
   server: {

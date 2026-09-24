@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { ContentFont } from '@/lib/types';
 import { useWorkspaceStore } from '@/lib/store/workspace';
 import { useUiStore } from '@/lib/store/ui';
+import { loadMathfield } from '@/lib/mathfield';
 
 export default function Editor({
   pageId,
@@ -45,6 +46,14 @@ export default function Editor({
     if (titleRef.current) titleRef.current.value = page?.title ?? '';
     setTitleText(page?.title ?? '');
   }, [page?.id, page?.title]);
+
+  useEffect(() => {
+    // Fetch the maths field in the background: by the time the first formula
+    // is opened, mid-lecture, it should already be there.
+    const idle = window.requestIdleCallback?.(() => loadMathfield(), { timeout: 4000 });
+    if (idle === undefined) loadMathfield();
+    return () => window.cancelIdleCallback?.(idle!);
+  }, []);
 
   useEffect(() => {
     // Publish the editor so global UI (the command palette) can write into it.
