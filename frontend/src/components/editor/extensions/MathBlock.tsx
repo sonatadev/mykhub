@@ -139,7 +139,7 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
           <MathField value={draft} onChange={commit} onLeave={leave} />
           <div className="math-block__footer">
             <span className="math-block__hint">
-              Formula<span className="math-block__hint-key"> · Esc per chiudere</span>
+              Formula<span className="math-block__hint-key"> · Tab tra i campi · Invio per chiudere</span>
             </span>
             <div className="math-block__actions">
             <button
