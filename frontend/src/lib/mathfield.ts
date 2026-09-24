@@ -81,6 +81,18 @@ export function mathfieldHeld() {
  * resting view, the share pages and the .tex export. Holes left empty go back
  * to being plain empty groups.
  */
+const MATHLIVE_MACROS: Array<[RegExp, string]> = [
+  [/\\differentialD\s*/g, '\\mathrm{d}'],
+  [/\\differenceD\s*/g, '\\mathrm{D}'],
+  [/\\exponentialE\s*/g, '\\mathrm{e}'],
+  [/\\imaginaryI\s*/g, '\\mathrm{i}'],
+  [/\\imaginaryJ\s*/g, '\\mathrm{j}'],
+];
+
 export function stripPlaceholders(latex: string) {
-  return latex.replace(/\\placeholder(?:\[[^\]]*\])?\{([^{}]*)\}/g, '$1');
+  let out = latex.replace(/\\placeholder(?:\[[^\]]*\])?\{([^{}]*)\}/g, '$1');
+  // MathLive turns "dx" and friends into macros of its own invention, which
+  // KaTeX, the .tex export and any other reader know nothing about.
+  for (const [pattern, replacement] of MATHLIVE_MACROS) out = out.replace(pattern, replacement);
+  return out;
 }

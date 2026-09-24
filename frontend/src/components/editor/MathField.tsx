@@ -68,30 +68,35 @@ export default function MathField({ value, onChange, onLeave }: Props) {
       // which is deeper than this listener would otherwise reach.
       mf.addEventListener('keydown', (event) => {
         if (event.key === 'Tab' && !event.metaKey && !event.ctrlKey) {
-          // Walk the holes, and wrap round at the end: Tab is for filling the
-          // formula in, not for leaving it half-written.
-          // Asking MathLive to step past the last hole makes it leave the
-          // field — and drop the next keystroke on the way out. So look
-          // ahead first, and wrap round by hand when there is nothing left.
+          // Tab walks the holes. Asking MathLive to step past the last one
+          // makes it leave the field — and drop the next keystroke on the way
+          // out — so every case is decided here instead.
           const back = event.shiftKey;
           event.preventDefault();
           event.stopPropagation();
-          if (!mf!.value.includes('\\placeholder')) {
-            // Nothing left to fill in: Tab means "done with this formula".
-            handlers.current.onLeave(true);
-            return;
-          }
-          const ahead = back
-            ? mf!.getValue(0, mf!.position)
-            : mf!.getValue(mf!.position, mf!.lastOffset);
           navigating = true;
-          if (ahead.includes('\\placeholder')) {
-            mf!.executeCommand(back ? 'moveToPreviousPlaceholder' : 'moveToNextPlaceholder');
+          if (!mf!.value.includes('\\placeholder')) {
+            // Nothing left to fill in: carry on at the end of the formula,
+            // which is where the rest of it gets written.
+            mf!.executeCommand(back ? 'moveToMathfieldStart' : 'moveToMathfieldEnd');
           } else {
-            mf!.executeCommand(back ? 'moveToMathfieldEnd' : 'moveToMathfieldStart');
+            // MathLive's own order does not always run left to right — an
+            // exponent comes before its index — so there can be no hole
+            // "ahead" while holes remain. Then the walk starts again.
+            const ahead = back
+              ? mf!.getValue(0, mf!.position)
+              : mf!.getValue(mf!.position, mf!.lastOffset);
+            if (!ahead.includes('\\placeholder')) {
+              mf!.executeCommand(back ? 'moveToMathfieldEnd' : 'moveToMathfieldStart');
+            }
             mf!.executeCommand(back ? 'moveToPreviousPlaceholder' : 'moveToNextPlaceholder');
           }
-          navigating = false;
+          // Released a tick later: a movement command that finds nothing to
+          // move to can blur the field for a moment on its way nowhere.
+          mf!.focus();
+          window.setTimeout(() => {
+            navigating = false;
+          }, 0);
           return;
         }
         const done =

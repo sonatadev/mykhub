@@ -156,9 +156,9 @@ export const SLASH_ITEMS: SlashItem[] = [
     icon: Sigma,
     run: (editor, range) => editor.chain().focus().deleteRange(range).setMathBlock().run(),
   },
-  mathTemplate('Limite', 'lim per x → x₀', '\\lim_{{} \\to {}} {}', ['limite', 'lim'], TrendingUp),
-  mathTemplate('Integrale', 'Integrale definito', '\\int_{}^{} {}\\,dx', ['integrale', 'int'], Radical),
-  mathTemplate('Sommatoria', 'Serie o somma finita', '\\sum_{}^{} {}', ['somma', 'serie', 'sum'], Sigma),
+  mathTemplate('Limite', 'lim per x → x₀', '\\lim_{{} \\to {}}', ['limite', 'lim'], TrendingUp),
+  mathTemplate('Integrale', 'Integrale definito', '\\int_{}^{}', ['integrale', 'int'], Radical),
+  mathTemplate('Sommatoria', 'Serie o somma finita', '\\sum_{}^{}', ['somma', 'serie', 'sum'], Sigma),
   mathTemplate('Derivata', 'Rapporto incrementale', "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}", ['derivata', 'diff'], FunctionSquare),
   mathTemplate('Frazione', 'a fratto b', '\\frac{}{}', ['frazione', 'frac'], Braces),
   mathTemplate(
@@ -189,7 +189,25 @@ export const SLASH_ITEMS: SlashItem[] = [
     group: 'Ambienti',
     keywords: [variant, 'ambiente', 'teorema', 'environment'],
     icon: Quote,
-    run: (editor, range) => editor.chain().focus().deleteRange(range).setTheoremBlock(variant).run(),
+    run: (editor, range) =>
+      editor
+        .chain()
+        .focus()
+        .deleteRange(range)
+        .command(({ tr, commands }) => {
+          // Typed at the end of a sentence, "/lemma" means "start a lemma
+          // here" — not "turn what I just wrote into one". The position comes
+          // from the running transaction: the slash query has just been
+          // deleted, so the original state's positions are already stale.
+          const { $from } = tr.selection;
+          if ($from.parent.textContent.trim().length === 0) return commands.setTheoremBlock(variant);
+          return commands.insertContentAt($from.after(), {
+            type: 'theoremBlock',
+            attrs: { variant },
+            content: [{ type: 'paragraph' }],
+          });
+        })
+        .run(),
   })),
 ];
 
