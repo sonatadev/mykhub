@@ -98,6 +98,29 @@ export default function MathField({ value, onChange, onLeave, autoFocus = true }
           event.preventDefault();
           event.stopPropagation();
           navigating = true;
+          // An empty exponent is always the next thing to write: MathLive
+          // visits it first, but an integral or a sum is written from its
+          // lower bound up, so the caret starts below and Tab comes back here
+          // before going on to the body.
+          if (!back && /\^\{\\placeholder\{\}\}/.test(mf!.value)) {
+            const origin = mf!.position;
+            const holes = (mf!.value.match(/\\placeholder/g) || []).length;
+            const stops: number[] = [];
+            mf!.executeCommand('moveToMathfieldStart');
+            for (let i = 0; i < holes; i++) {
+              mf!.executeCommand('moveToNextPlaceholder');
+              stops.push(mf!.position);
+            }
+            if (stops.length > 0 && origin !== stops[0]) {
+              mf!.position = stops[0];
+              mf!.focus();
+              window.setTimeout(() => {
+                navigating = false;
+              }, 0);
+              return;
+            }
+            mf!.position = origin;
+          }
           if (!mf!.value.includes('\\placeholder')) {
             // Nothing left to fill in: carry on at the end of the formula,
             // which is where the rest of it gets written.

@@ -157,10 +157,17 @@ export const SLASH_ITEMS: SlashItem[] = [
     icon: Sigma,
     run: (editor, range) => editor.chain().focus().deleteRange(range).setMathBlock().run(),
   },
-  mathTemplate('Limite', 'lim per x → x₀', '\\lim_{{} \\to {}}', ['limite', 'lim'], TrendingUp),
-  mathTemplate('Integrale', 'Integrale definito', '\\int_{}^{}', ['integrale', 'int'], Radical),
-  mathTemplate('Sommatoria', 'Serie o somma finita', '\\sum_{}^{}', ['somma', 'serie', 'sum'], Sigma),
-  mathTemplate('Derivata', 'Rapporto incrementale', "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}", ['derivata', 'diff'], FunctionSquare),
+  mathTemplate('Limite', 'lim per x → x₀', '\\lim_{{} \\to {}} {}', ['limite', 'lim'], TrendingUp),
+  mathTemplate('Integrale', 'Integrale definito', '\\int_{}^{} {}', ['integrale', 'int'], Radical),
+  mathTemplate('Sommatoria', 'Serie o somma finita', '\\sum_{}^{} {}', ['somma', 'serie', 'sum'], Sigma),
+  mathTemplate('Derivata', 'Derivata di una funzione', '\\frac{d{}}{d{}}', ['derivata', 'diff'], FunctionSquare),
+  mathTemplate(
+    'Rapporto incrementale',
+    'La definizione di derivata',
+    "f'({}) = \\lim_{h \\to 0} \\frac{f({}+h) - f({})}{h}",
+    ['rapporto incrementale', 'definizione derivata'],
+    FunctionSquare
+  ),
   mathTemplate('Frazione', 'a fratto b', '\\frac{}{}', ['frazione', 'frac'], Braces),
   {
     title: 'Grafico',
