@@ -253,7 +253,6 @@ export const MathBlock = Node.create({
 
   addKeyboardShortcuts() {
     return {
-      'Mod-m': () => this.editor.commands.insertInlineMath(),
       'Mod-Shift-m': () => this.editor.commands.setMathBlock(),
     };
   },

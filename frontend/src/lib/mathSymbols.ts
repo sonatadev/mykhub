@@ -212,7 +212,15 @@ export function isTemplate(latex: string) {
  * rather than showing its source.
  */
 export function insertSymbol(editor: Editor, latex: string) {
-  if (isTemplate(latex)) return editor.chain().focus().insertMathTemplate(latex).run();
+  if (isTemplate(latex)) {
+    // In the middle of a sentence a fraction belongs on the line, at the size
+    // of the words around it; on a line of its own it becomes a display
+    // formula, centred as a result worth its own line.
+    const inSentence = editor.state.selection.$from.parent.textContent.trim().length > 0;
+    return inSentence
+      ? editor.chain().focus().setMathInline(latex).run()
+      : editor.chain().focus().insertMathTemplate(latex).run();
+  }
   // The trailing space matters: inline maths shows its own source while the
   // caret is still between the dollars, so the caret has to end up past them.
   return editor.chain().focus().insertContent(`$${latex.trim()}$ `).run();

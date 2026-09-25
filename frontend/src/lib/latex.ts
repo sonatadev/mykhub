@@ -64,6 +64,7 @@ function renderInline(nodes: JSONContent[] | undefined): string {
     .map((node) => {
       if (node.type === 'text') return renderText(node);
       if (node.type === 'hardBreak') return '\\\\\n';
+      if (node.type === 'mathInline') return `$${String(node.attrs?.latex ?? '').trim()}$`;
       if (node.type === 'image') return `\\texttt{[immagine: ${escapeLatex(String(node.attrs?.src ?? ''))}]}`;
       return renderInline(node.content);
     })

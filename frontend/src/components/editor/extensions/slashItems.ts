@@ -142,12 +142,12 @@ export const SLASH_ITEMS: SlashItem[] = [
   },
 
   {
-    title: 'Formula inline',
-    hint: 'Matematica dentro il testo — $…$',
+    title: 'Formula nel testo',
+    hint: 'Una formula della misura delle parole',
     group: 'Matematica',
-    keywords: ['math', 'formula', 'latex', 'katex', 'inline'],
+    keywords: ['math', 'formula', 'inline', 'testo', 'riga'],
     icon: FunctionSquare,
-    run: (editor, range) => editor.chain().focus().deleteRange(range).insertInlineMath().run(),
+    run: (editor, range) => editor.chain().focus().deleteRange(range).setMathInline().run(),
   },
   {
     title: 'Formula in display',

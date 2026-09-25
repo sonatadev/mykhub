@@ -105,9 +105,10 @@ export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPic
 
       <Toggle
         size="sm"
-        onPressedChange={() => editor.chain().focus().insertInlineMath().run()}
-        aria-label="Formula inline (Ctrl+M)"
-        title="Formula inline — Ctrl+M"
+        pressed={editor.isActive('mathInline')}
+        onPressedChange={() => editor.chain().focus().setMathInline().run()}
+        aria-label="Formula nel testo (Ctrl+M)"
+        title="Formula nel testo — Ctrl+M"
       >
         <FunctionSquare />
       </Toggle>

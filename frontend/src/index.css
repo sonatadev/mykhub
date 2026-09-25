@@ -794,3 +794,35 @@
 .recent-symbols__tile .katex {
   font-size: 0.9em;
 }
+
+/* A formula written inside a line of prose */
+.math-inline {
+  @apply inline-block align-baseline;
+}
+.math-inline__render {
+  @apply inline-block rounded px-0.5;
+}
+.math-inline__render:hover {
+  @apply bg-accent/50;
+}
+.math-inline__render:focus-visible {
+  @apply outline-none ring-2 ring-ring;
+}
+.math-inline--selected .math-inline__render {
+  @apply bg-accent;
+}
+.math-inline__editor {
+  @apply inline-block align-middle;
+}
+.math-inline__editor .math-field-host {
+  @apply inline-block w-auto rounded bg-muted px-1 py-0;
+}
+.math-inline__editor math-field {
+  font-size: 1em;
+  display: inline-block;
+  width: auto;
+  min-width: 2ch;
+}
+.math-inline__editor math-field::part(content) {
+  @apply justify-start text-left;
+}
