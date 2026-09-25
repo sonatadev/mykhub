@@ -639,3 +639,60 @@
 .math-symbols__hint {
   @apply border-t border-border px-2 pt-1.5 text-[11px] text-muted-foreground;
 }
+
+/* Function graphs — drawn to read like a screenshot from a graphing app */
+.function-graph {
+  @apply my-4 flex justify-center;
+}
+.function-graph__box {
+  /* Light regardless of the theme: a screenshot of a graph is a white one. */
+  @apply inline-block rounded-md bg-white p-1;
+  border: 1px solid #d8d8d8;
+  max-width: 100%;
+}
+.function-graph__box--selected {
+  @apply outline outline-2 outline-offset-2 outline-ring;
+}
+.function-graph__frame {
+  @apply relative overflow-hidden rounded;
+  resize: both;
+  max-width: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+.function-graph__frame:active {
+  cursor: grabbing;
+}
+.function-graph__frame--static {
+  resize: none;
+  cursor: default;
+}
+.function-graph__svg {
+  @apply block h-full w-full;
+}
+.function-graph__controls {
+  @apply mt-1 flex items-center gap-1 px-1 pb-0.5;
+}
+.function-graph__controls button {
+  @apply rounded p-1 text-muted-foreground;
+}
+.function-graph__controls button:hover {
+  @apply bg-muted text-foreground;
+}
+.function-graph__input {
+  @apply min-w-0 flex-1 rounded bg-muted px-2 py-1 font-mono text-xs text-foreground outline-none;
+}
+@media (pointer: coarse) {
+  .function-graph__input {
+    font-size: 16px;
+  }
+}
+@media print {
+  .function-graph__controls {
+    display: none !important;
+  }
+  .function-graph__box {
+    border-color: #ddd !important;
+    box-shadow: none !important;
+  }
+}

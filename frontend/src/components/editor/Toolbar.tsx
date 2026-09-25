@@ -10,6 +10,7 @@ import {
   ListChecks,
   ImageIcon,
   FunctionSquare,
+  LineChart,
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Separator } from '@/components/ui/separator';
@@ -111,6 +112,15 @@ export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPic
         <FunctionSquare />
       </Toggle>
       <MathSymbolMenu editor={editor} />
+      <Toggle
+        size="sm"
+        pressed={editor.isActive('functionGraph')}
+        onPressedChange={() => editor.chain().focus().insertFunctionGraph().run()}
+        aria-label="Grafico di funzione"
+        title="Grafico di funzione"
+      >
+        <LineChart />
+      </Toggle>
       <TheoremMenu editor={editor} />
     </div>
   );

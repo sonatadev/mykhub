@@ -1,6 +1,7 @@
 import { Mathematics, defaultShouldRender } from '@tiptap/extension-mathematics';
 import { MathBlock, KATEX_OPTIONS } from './MathBlock';
 import { TheoremBlock } from './TheoremBlock';
+import { FunctionGraph } from './FunctionGraph';
 import { TrailingNode } from './TrailingNode';
 
 /**
@@ -17,6 +18,7 @@ export const mathExtensions = [
   }),
   MathBlock,
   TheoremBlock,
+  FunctionGraph,
 ];
 
 /**
@@ -25,7 +27,7 @@ export const mathExtensions = [
  */
 export const editorExtensions = [...mathExtensions, TrailingNode];
 
-export { MathBlock, TheoremBlock, TrailingNode, KATEX_OPTIONS };
+export { MathBlock, TheoremBlock, FunctionGraph, TrailingNode, KATEX_OPTIONS };
 export { THEOREM_ORDER, THEOREM_VARIANTS } from './TheoremBlock';
 export type { TheoremVariant } from './TheoremBlock';
 export { SlashCommands } from './SlashCommands';

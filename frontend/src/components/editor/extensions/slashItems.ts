@@ -9,6 +9,7 @@ import {
   Heading2,
   Heading3,
   Image as ImageIcon,
+  LineChart,
   List,
   ListChecks,
   ListOrdered,
@@ -161,6 +162,14 @@ export const SLASH_ITEMS: SlashItem[] = [
   mathTemplate('Sommatoria', 'Serie o somma finita', '\\sum_{}^{}', ['somma', 'serie', 'sum'], Sigma),
   mathTemplate('Derivata', 'Rapporto incrementale', "f'(x) = \\lim_{h \\to 0} \\frac{f(x+h) - f(x)}{h}", ['derivata', 'diff'], FunctionSquare),
   mathTemplate('Frazione', 'a fratto b', '\\frac{}{}', ['frazione', 'frac'], Braces),
+  {
+    title: 'Grafico',
+    hint: 'Disegna una funzione',
+    group: 'Matematica',
+    keywords: ['grafico', 'graph', 'funzione', 'plot', 'geogebra'],
+    icon: LineChart,
+    run: (editor, range) => editor.chain().focus().deleteRange(range).insertFunctionGraph().run(),
+  },
   mathTemplate(
     'Matrice',
     'Matrice 2 × 2',
