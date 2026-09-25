@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Node, mergeAttributes } from '@tiptap/core';
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import type { NodeViewProps } from '@tiptap/react';
@@ -229,7 +229,10 @@ function FunctionGraphView({ node, updateAttributes, deleteNode, editor, selecte
     commitView(liveView.current);
   }
 
-  function onWheel(event: React.WheelEvent) {
+  // Registered by hand rather than as a prop: React's wheel listener is
+  // passive, so it cannot stop the page scrolling behind the zoom.
+  const zoomRef = useRef<(event: WheelEvent) => void>();
+  zoomRef.current = (event: WheelEvent) => {
     if (!editable) return;
     event.preventDefault();
     const rect = frameRef.current?.getBoundingClientRect();
@@ -241,7 +244,15 @@ function FunctionGraphView({ node, updateAttributes, deleteNode, editor, selecte
       x: view.xMin + px * (view.xMax - view.xMin),
       y: view.yMax - py * (view.yMax - view.yMin),
     });
-  }
+  };
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    const onWheel = (event: WheelEvent) => zoomRef.current?.(event);
+    frame.addEventListener('wheel', onWheel, { passive: false });
+    return () => frame.removeEventListener('wheel', onWheel);
+  }, []);
 
   const svg = useMemo(
     () => <GraphSvg expressions={attrs.expressions} view={view} width={width} height={height} />,
@@ -264,7 +275,6 @@ function FunctionGraphView({ node, updateAttributes, deleteNode, editor, selecte
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
           onPointerCancel={onPointerUp}
-          onWheel={onWheel}
           onMouseUp={() => {
             // The frame is resized with the CSS handle; store the new size.
             const el = frameRef.current;
