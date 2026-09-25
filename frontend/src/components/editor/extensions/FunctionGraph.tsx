@@ -147,8 +147,12 @@ function GraphSvg({ expressions, view, width, height }: { expressions: string; v
 function FunctionGraphView({ node, updateAttributes, deleteNode, editor, selected }: NodeViewProps) {
   const attrs = node.attrs as GraphAttrs;
   const parts = splitExpressions(attrs.expressions);
-  // Which field to put the caret in: the one just added, and nothing on load.
-  const [focusIndex, setFocusIndex] = useState<number | null>(null);
+  // Which field to put the caret in: the one just added — and the first one
+  // of a graph that has only just been inserted, so it can be typed into at
+  // once. A page of saved graphs focuses nothing.
+  const [focusIndex, setFocusIndex] = useState<number | null>(() =>
+    editor.isEditable && attrs.expressions.trim() === '' ? 0 : null
+  );
   const [view, setView] = useState<View>(() => readView(attrs));
   const frameRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number; view: View } | null>(null);
