@@ -67,6 +67,27 @@ export default function MathField({ value, onChange, onLeave }: Props) {
       // Capture phase: MathLive handles keys on a sink inside its shadow root,
       // which is deeper than this listener would otherwise reach.
       mf.addEventListener('keydown', (event) => {
+        // While a `\command` is being typed, MathLive owns the keyboard:
+        // space completes the command and Enter accepts it.
+        const typingCommand = mf!.mode === 'latex';
+
+        if (
+          event.key === ' ' &&
+          !typingCommand &&
+          mf!.mode !== 'text' &&
+          !event.metaKey &&
+          !event.ctrlKey &&
+          !event.altKey
+        ) {
+          // Maths ignores ordinary spaces, so the space bar would otherwise do
+          // nothing at all. It inserts the thin space that belongs between a
+          // term and its differential: 3x^2 \, dx.
+          event.preventDefault();
+          event.stopPropagation();
+          mf!.insert('\\,', { focus: true, feedback: false });
+          return;
+        }
+
         if (event.key === 'Tab' && !event.metaKey && !event.ctrlKey) {
           // Tab walks the holes. Asking MathLive to step past the last one
           // makes it leave the field — and drop the next keystroke on the way
@@ -100,13 +121,14 @@ export default function MathField({ value, onChange, onLeave }: Props) {
           return;
         }
         const done =
-          event.key === 'Escape' ||
-          // Enter finishes the formula and moves on, the way it does in the
-          // rest of the editor — except inside a matrix or a system, where
-          // MathLive needs it to start the next row.
-          (event.key === 'Enter' &&
-            !event.shiftKey &&
-            (event.metaKey || event.ctrlKey || !mf!.value.includes('\\begin{')));
+          !typingCommand &&
+          (event.key === 'Escape' ||
+            // Enter finishes the formula and moves on, the way it does in the
+            // rest of the editor — except inside a matrix or a system, where
+            // MathLive needs it to start the next row.
+            (event.key === 'Enter' &&
+              !event.shiftKey &&
+              (event.metaKey || event.ctrlKey || !mf!.value.includes('\\begin{'))));
         if (!done) return;
         event.preventDefault();
         event.stopPropagation();

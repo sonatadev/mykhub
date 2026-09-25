@@ -82,7 +82,8 @@ export function mathfieldHeld() {
  * to being plain empty groups.
  */
 const MATHLIVE_MACROS: Array<[RegExp, string]> = [
-  [/\\differentialD\s*/g, '\\mathrm{d}'],
+  // The thin space is part of how MathLive draws it; KaTeX needs it spelt out.
+  [/(?:\\,)?\\differentialD\s*/g, '\\,\\mathrm{d}'],
   [/\\differenceD\s*/g, '\\mathrm{D}'],
   [/\\exponentialE\s*/g, '\\mathrm{e}'],
   [/\\imaginaryI\s*/g, '\\mathrm{i}'],
