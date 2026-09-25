@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { insertSymbol, symbolGroups, symbolPreview } from '@/lib/mathSymbols';
+import { useRecentSymbols } from '@/lib/store/recentSymbols';
 import { renderMath } from './extensions/MathBlock';
 
 /**
@@ -58,7 +59,10 @@ export default function MathSymbolMenu({ editor }: { editor: Editor }) {
                     className="math-symbols__tile"
                     title={symbol.label}
                     aria-label={symbol.label}
-                    onSelect={() => insertSymbol(editor, symbol.latex)}
+                    onSelect={() => {
+                      useRecentSymbols.getState().remember(symbol.latex);
+                      insertSymbol(editor, symbol.latex);
+                    }}
                   >
                     <span dangerouslySetInnerHTML={{ __html: renderMath(symbolPreview(symbol), false) }} />
                   </DropdownMenuItem>

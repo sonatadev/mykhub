@@ -2,8 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Node, mergeAttributes } from '@tiptap/core';
 import { NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import type { NodeViewProps } from '@tiptap/react';
-import { Minus, Plus, RotateCcw, Trash2 } from 'lucide-react';
-import { compile, formatTick, niceStep, pathFor, prettyExpression, type View } from '@/lib/plot';
+import { Minus, Plus, RotateCcw, Trash2, X } from 'lucide-react';
+import { compile, formatTick, latexToExpression, niceStep, pathFor, type View } from '@/lib/plot';
+import MathField from '../MathField';
+import { renderMath } from './MathBlock';
 import { cn } from '@/lib/utils';
 
 /**
@@ -13,8 +15,13 @@ import { cn } from '@/lib/utils';
  * expression, so the note stays small and stays searchable.
  */
 
-const COLORS = ['#1565c0', '#c62828', '#2e7d32', '#6a1b9a'];
+const CURVES = 4;
 const DEFAULT_VIEW: View = { xMin: -6, xMax: 6, yMin: -4, yMax: 4 };
+
+/** The functions of a graph, kept in one attribute as `;`-separated LaTeX. */
+function splitExpressions(value: string) {
+  return value.split(';').map((part) => part.trim());
+}
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -41,10 +48,7 @@ function readView(attrs: GraphAttrs): View {
 }
 
 function GraphSvg({ expressions, view, width, height }: { expressions: string; view: View; width: number; height: number }) {
-  const parts = expressions
-    .split(/[;\n]/)
-    .map((part) => part.trim())
-    .filter(Boolean);
+  const parts = splitExpressions(expressions).filter(Boolean);
 
   const toX = (x: number) => ((x - view.xMin) / (view.xMax - view.xMin)) * width;
   const toY = (y: number) => height - ((y - view.yMin) / (view.yMax - view.yMin)) * height;
@@ -61,13 +65,8 @@ function GraphSvg({ expressions, view, width, height }: { expressions: string; v
   const axisX = Math.min(Math.max(toX(0), 0), width);
 
   const curves = parts.map((part, index) => {
-    const fn = compile(part);
-    return {
-      label: part,
-      color: COLORS[index % COLORS.length],
-      d: fn ? pathFor(fn, view, width, height) : '',
-      valid: !!fn,
-    };
+    const fn = compile(latexToExpression(part));
+    return { index, d: fn ? pathFor(fn, view, width, height) : '' };
   });
 
   return (
@@ -79,9 +78,9 @@ function GraphSvg({ expressions, view, width, height }: { expressions: string; v
       role="img"
       aria-label={parts.length ? `Grafico di ${parts.join(', ')}` : 'Grafico vuoto'}
     >
-      <rect x={0} y={0} width={width} height={height} fill="#ffffff" />
+      <rect className="fg-paper" x={0} y={0} width={width} height={height} />
 
-      <g stroke="#e3e3e3" strokeWidth={1}>
+      <g className="fg-grid" strokeWidth={1}>
         {ticksX.map((v) => (
           <line key={`gx${v}`} x1={toX(v)} y1={0} x2={toX(v)} y2={height} />
         ))}
@@ -90,20 +89,20 @@ function GraphSvg({ expressions, view, width, height }: { expressions: string; v
         ))}
       </g>
 
-      <g stroke="#111111" strokeWidth={1.2}>
+      <g className="fg-axis" strokeWidth={1.2}>
         <line x1={0} y1={axisY} x2={width} y2={axisY} />
         <line x1={axisX} y1={0} x2={axisX} y2={height} />
       </g>
-      <g fill="#111111">
+      <g className="fg-axis-fill">
         <polygon points={`${width},${axisY} ${width - 7},${axisY - 3.5} ${width - 7},${axisY + 3.5}`} />
         <polygon points={`${axisX},0 ${axisX - 3.5},7 ${axisX + 3.5},7`} />
       </g>
 
-      <g fill="#333333" fontSize={11} fontFamily="ui-sans-serif, system-ui, sans-serif">
+      <g className="fg-labels" fontSize={11} fontFamily="ui-sans-serif, system-ui, sans-serif">
         {ticksX.map((v) =>
           Math.abs(v) < stepX / 1000 || toX(v) < 14 || toX(v) > width - 14 ? null : (
             <g key={`tx${v}`}>
-              <line x1={toX(v)} y1={axisY - 3} x2={toX(v)} y2={axisY + 3} stroke="#111111" strokeWidth={1.2} />
+              <line className="fg-axis" x1={toX(v)} y1={axisY - 3} x2={toX(v)} y2={axisY + 3} strokeWidth={1.2} />
               <text x={toX(v)} y={Math.min(axisY + 15, height - 3)} textAnchor="middle">
                 {formatTick(v, stepX)}
               </text>
@@ -113,7 +112,7 @@ function GraphSvg({ expressions, view, width, height }: { expressions: string; v
         {ticksY.map((v) =>
           Math.abs(v) < stepY / 1000 || toY(v) < 12 || toY(v) > height - 8 ? null : (
             <g key={`ty${v}`}>
-              <line x1={axisX - 3} y1={toY(v)} x2={axisX + 3} y2={toY(v)} stroke="#111111" strokeWidth={1.2} />
+              <line className="fg-axis" x1={axisX - 3} y1={toY(v)} x2={axisX + 3} y2={toY(v)} strokeWidth={1.2} />
               <text x={Math.max(axisX - 6, 4)} y={toY(v) + 3.5} textAnchor="end">
                 {formatTick(v, stepY)}
               </text>
@@ -128,28 +127,18 @@ function GraphSvg({ expressions, view, width, height }: { expressions: string; v
         </text>
       </g>
 
-      {curves.map((curve, index) =>
+      {curves.map((curve) =>
         curve.d ? (
           <path
-            key={index}
+            key={curve.index}
+            className={`fg-curve fg-curve--${curve.index % CURVES}`}
             d={curve.d}
             fill="none"
-            stroke={curve.color}
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         ) : null
-      )}
-
-      {curves.length > 0 && (
-        <g fontSize={12} fontFamily="ui-sans-serif, system-ui, sans-serif">
-          {curves.map((curve, index) => (
-            <text key={`l${index}`} x={8} y={16 + index * 16} fill={curve.valid ? curve.color : '#b00020'}>
-              {curve.valid ? `f${curves.length > 1 ? index + 1 : ''}(x) = ${prettyExpression(curve.label)}` : `? ${curve.label}`}
-            </text>
-          ))}
-        </g>
       )}
     </svg>
   );
@@ -157,7 +146,9 @@ function GraphSvg({ expressions, view, width, height }: { expressions: string; v
 
 function FunctionGraphView({ node, updateAttributes, deleteNode, editor, selected }: NodeViewProps) {
   const attrs = node.attrs as GraphAttrs;
-  const [draft, setDraft] = useState(attrs.expressions);
+  const parts = splitExpressions(attrs.expressions);
+  // Which field to put the caret in: the one just added, and nothing on load.
+  const [focusIndex, setFocusIndex] = useState<number | null>(null);
   const [view, setView] = useState<View>(() => readView(attrs));
   const frameRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number; view: View } | null>(null);
@@ -285,21 +276,70 @@ function FunctionGraphView({ node, updateAttributes, deleteNode, editor, selecte
           }}
         >
           {svg}
+          {/* The legend is real maths, drawn over the plot the way a graphing
+              app labels its curves — and it prints and shares with it. */}
+          {parts.some(Boolean) && (
+            <div className="function-graph__legend" aria-hidden="true">
+              {parts.map((part, index) =>
+                part ? (
+                  <div
+                    key={index}
+                    className={`fg-curve--${index % CURVES}`}
+                    dangerouslySetInnerHTML={{
+                      __html: renderMath(`f${parts.length > 1 ? `_{${index + 1}}` : ''}(x) = ${part}`, false),
+                    }}
+                  />
+                ) : null
+              )}
+            </div>
+          )}
         </div>
 
         {editable && (
           <div className="function-graph__controls" contentEditable={false}>
-            <input
-              className="function-graph__input"
-              value={draft}
-              spellCheck={false}
-              placeholder="x^2 - 3  ·  separa più funzioni con ;"
-              aria-label="Funzione da disegnare"
-              onChange={(e) => {
-                setDraft(e.target.value);
-                updateAttributes({ expressions: e.target.value });
-              }}
-            />
+            <div className="function-graph__functions">
+              {parts.map((part, index) => (
+                <div key={index} className="function-graph__row">
+                  <span className={`function-graph__dot fg-curve--${index % CURVES}`} aria-hidden="true" />
+                  <span className="function-graph__fx">f{parts.length > 1 ? index + 1 : ''}(x) =</span>
+                  <div className="function-graph__field">
+                    <MathField
+                      value={part}
+                      autoFocus={focusIndex === index}
+                      onChange={(latex) => {
+                        const next = [...parts];
+                        next[index] = latex;
+                        updateAttributes({ expressions: next.join(';') });
+                      }}
+                      onLeave={() => setFocusIndex(null)}
+                    />
+                  </div>
+                  {parts.length > 1 && (
+                    <button
+                      type="button"
+                      title="Togli questa funzione"
+                      aria-label="Togli questa funzione"
+                      onClick={() => updateAttributes({ expressions: parts.filter((_, i) => i !== index).join(';') })}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              {parts.length < CURVES && (
+                <button
+                  type="button"
+                  className="function-graph__add"
+                  onClick={() => {
+                    setFocusIndex(parts.length);
+                    updateAttributes({ expressions: [...parts, ''].join(';') });
+                  }}
+                >
+                  <Plus className="h-3.5 w-3.5" /> funzione
+                </button>
+              )}
+            </div>
+            <div className="function-graph__view">
             <button type="button" title="Ingrandisci" aria-label="Ingrandisci" onClick={() => zoom(1 / 1.3)}>
               <Plus className="h-3.5 w-3.5" />
             </button>
@@ -317,6 +357,7 @@ function FunctionGraphView({ node, updateAttributes, deleteNode, editor, selecte
             <button type="button" title="Elimina il grafico" aria-label="Elimina il grafico" onClick={() => deleteNode()}>
               <Trash2 className="h-3.5 w-3.5" />
             </button>
+            </div>
           </div>
         )}
       </div>
@@ -378,7 +419,7 @@ export const FunctionGraph = Node.create({
   addCommands() {
     return {
       insertFunctionGraph:
-        (expressions = 'x^2') =>
+        (expressions = '') =>
         ({ chain }) =>
           chain()
             .insertContent({ type: this.name, attrs: { expressions } })

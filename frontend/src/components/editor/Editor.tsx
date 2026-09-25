@@ -3,6 +3,7 @@ import { EditorContent } from '@tiptap/react';
 import { toast } from 'sonner';
 import Toolbar from './Toolbar';
 import MathKeyBar from './MathKeyBar';
+import RecentSymbolsPanel from './RecentSymbolsPanel';
 import { useCollabEditor, type SaveStatus, type ConnectionStatus, type CollabUser } from './useCollabEditor';
 import { pagesApi, uploadApi, ApiError } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -156,6 +157,7 @@ export default function Editor({
     <div className="flex h-full flex-col">
       <Toolbar editor={editor} onPickImage={() => fileInputRef.current?.click()} />
       <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden onChange={onFilePicked} />
+      <div className="flex min-h-0 flex-1">
       <div className="editor-scroll flex-1 overflow-y-auto bg-muted/40 px-4 py-8 sm:px-8 print:overflow-visible print:bg-transparent print:p-0">
         <div className="printable mx-auto w-full max-w-[760px] rounded-2xl border-2 border-border bg-card px-8 py-10 shadow-sm sm:px-14">
           <h1 className="hidden font-serif text-3xl font-semibold leading-tight print:block">{titleText}</h1>
@@ -170,6 +172,8 @@ export default function Editor({
             <EditorContent editor={editor} />
           </div>
         </div>
+      </div>
+      <RecentSymbolsPanel editor={editor} />
       </div>
       <MathKeyBar editor={editor} />
     </div>

@@ -280,3 +280,86 @@ export function prettyExpression(expression: string) {
     .replace(/ \)/g, ')')
     .trim();
 }
+
+/**
+ * Turns what the maths field produces into something `compile` understands:
+ * `\frac{x}{2}` into `((x)/(2))`, `x^{2}` into `x^(2)`, `\sin` into `sin`.
+ * Plain text written without a field passes through untouched.
+ */
+
+/** Reads a `{…}` group starting at `open`, respecting nesting. */
+function readGroup(source: string, open: number): { body: string; end: number } | null {
+  if (source[open] !== '{') return null;
+  let depth = 0;
+  for (let i = open; i < source.length; i++) {
+    if (source[i] === '{') depth += 1;
+    else if (source[i] === '}') {
+      depth -= 1;
+      if (depth === 0) return { body: source.slice(open + 1, i), end: i + 1 };
+    }
+  }
+  return null;
+}
+
+/** Rewrites `\name{a}{b}` (or one argument) wherever it appears, innermost last. */
+function expandCommand(source: string, name: string, args: number, build: (parts: string[]) => string) {
+  let out = source;
+  for (let guard = 0; guard < 20; guard++) {
+    const at = out.indexOf(`\\${name}`);
+    if (at < 0) break;
+    let cursor = at + name.length + 1;
+    const parts: string[] = [];
+    let ok = true;
+    for (let i = 0; i < args; i++) {
+      while (out[cursor] === ' ') cursor += 1;
+      const group = readGroup(out, cursor);
+      if (!group) {
+        ok = false;
+        break;
+      }
+      parts.push(group.body);
+      cursor = group.end;
+    }
+    if (!ok) break;
+    out = out.slice(0, at) + build(parts) + out.slice(cursor);
+  }
+  return out;
+}
+
+export function latexToExpression(latex: string): string {
+  let out = latex;
+
+  out = expandCommand(out, 'dfrac', 2, ([a, b]) => `((${a})/(${b}))`);
+  out = expandCommand(out, 'tfrac', 2, ([a, b]) => `((${a})/(${b}))`);
+  out = expandCommand(out, 'frac', 2, ([a, b]) => `((${a})/(${b}))`);
+  out = expandCommand(out, 'sqrt', 1, ([a]) => `sqrt(${a})`);
+  out = expandCommand(out, 'operatorname', 1, ([a]) => a);
+  out = expandCommand(out, 'mathrm', 1, ([a]) => a);
+  out = expandCommand(out, 'placeholder', 1, () => '');
+  out = expandCommand(out, 'abs', 1, ([a]) => `abs(${a})`);
+
+  out = out
+    .replace(/\\left\s*/g, '')
+    .replace(/\\right\s*/g, '')
+    .replace(/\\cdot|\\times/g, '*')
+    .replace(/\\div/g, '/')
+    .replace(/\\pi\b/g, 'pi')
+    .replace(/\\exponentialE\b/g, 'e')
+    .replace(/\\arcsin\b/g, 'asin')
+    .replace(/\\arccos\b/g, 'acos')
+    .replace(/\\arctan\b/g, 'atan')
+    .replace(/\\(sin|cos|tan|sinh|cosh|tanh|ln|log|exp|max|min|abs|floor|ceil)\b/g, '$1')
+    .replace(/\\,|\;|\\!|\\:|\\ /g, '')
+    .replace(/\\placeholder/g, '');
+
+  // Superscripts become bracketed powers, innermost first.
+  for (let guard = 0; guard < 20; guard++) {
+    const at = out.indexOf('^{');
+    if (at < 0) break;
+    const group = readGroup(out, at + 1);
+    if (!group) break;
+    out = out.slice(0, at) + `^(${group.body})` + out.slice(group.end);
+  }
+
+  return out.replace(/[{}]/g, '').trim();
+}

@@ -8,6 +8,7 @@ import { useUiStore } from '@/lib/store/ui';
 import { MATH_SYMBOLS, insertSymbol, symbolPreview, type MathSymbol } from '@/lib/mathSymbols';
 import { renderMath } from '@/components/editor/extensions/MathBlock';
 import { activeMathfield, holdMathfield, insertLatex } from '@/lib/mathfield';
+import { useRecentSymbols } from '@/lib/store/recentSymbols';
 import IconGlyph from '@/components/IconGlyph';
 import { cn } from '@/lib/utils';
 
@@ -149,6 +150,7 @@ export default function CommandPalette() {
       navigate(`/space/${entry.spaceId}/page/${entry.id}`);
       return;
     }
+    useRecentSymbols.getState().remember(entry.symbol.latex);
     const field = fieldRef.current;
     if (field?.isConnected) {
       close(true);

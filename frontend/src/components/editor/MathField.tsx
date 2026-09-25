@@ -14,6 +14,8 @@ interface Props {
   onChange: (latex: string) => void;
   /** Called when the caret leaves the formula; `true` when the user is done. */
   onLeave: (placeCursorAfter: boolean) => void;
+  /** Whether to take the focus on mount. A page full of fields must not. */
+  autoFocus?: boolean;
 }
 
 /** The virtual keyboard lives outside the field, so focus may legitimately
@@ -23,7 +25,7 @@ function focusIsInVirtualKeyboard() {
   return !!active && !!active.closest?.('.ML__keyboard, [part="virtual-keyboard"]');
 }
 
-export default function MathField({ value, onChange, onLeave }: Props) {
+export default function MathField({ value, onChange, onLeave, autoFocus = true }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [field, setField] = useState<MathfieldElement | null>(null);
 
@@ -153,6 +155,10 @@ export default function MathField({ value, onChange, onLeave }: Props) {
         }, 0);
       });
 
+      if (!autoFocus) {
+        setField(mf);
+        return;
+      }
       mf.focus();
       // A formula opened on a skeleton starts in its first hole; one being
       // revisited starts at the end, where typing continues naturally.
