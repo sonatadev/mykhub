@@ -1,4 +1,5 @@
 import { Mathematics, defaultShouldRender } from '@tiptap/extension-mathematics';
+import { CodeBlock } from './CodeBlock';
 import { MathBlock, KATEX_OPTIONS } from './MathBlock';
 import { MathInline } from './MathInline';
 import { TheoremBlock } from './TheoremBlock';
@@ -21,6 +22,7 @@ export const mathExtensions = [
   MathInline,
   TheoremBlock,
   FunctionGraph,
+  CodeBlock,
 ];
 
 /**
@@ -29,7 +31,7 @@ export const mathExtensions = [
  */
 export const editorExtensions = [...mathExtensions, TrailingNode];
 
-export { MathBlock, MathInline, TheoremBlock, FunctionGraph, TrailingNode, KATEX_OPTIONS };
+export { CodeBlock, MathBlock, MathInline, TheoremBlock, FunctionGraph, TrailingNode, KATEX_OPTIONS };
 export { THEOREM_ORDER, THEOREM_VARIANTS } from './TheoremBlock';
 export type { TheoremVariant } from './TheoremBlock';
 export { SlashCommands } from './SlashCommands';

@@ -106,9 +106,9 @@ export const SLASH_ITEMS: SlashItem[] = [
   },
   {
     title: 'Codice',
-    hint: 'Blocco di codice',
+    hint: 'Blocco con evidenziazione (C, Python, …)',
     group: 'Base',
-    keywords: ['code', 'codice', 'pre'],
+    keywords: ['code', 'codice', 'pre', 'blocco', 'c', 'python'],
     icon: Code2,
     run: (editor, range) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
   },

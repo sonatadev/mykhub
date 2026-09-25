@@ -11,6 +11,7 @@ import {
   ImageIcon,
   FunctionSquare,
   LineChart,
+  Code2,
 } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Separator } from '@/components/ui/separator';
@@ -99,6 +100,15 @@ export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPic
       <TableGridPopover editor={editor} />
       <Toggle size="sm" onPressedChange={onPickImage} aria-label="Inserisci immagine">
         <ImageIcon />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive('codeBlock')}
+        onPressedChange={() => editor.chain().focus().toggleCodeBlock().run()}
+        aria-label="Blocco di codice"
+        title="Blocco di codice"
+      >
+        <Code2 />
       </Toggle>
 
       <Separator orientation="vertical" className="mx-1 h-5" />

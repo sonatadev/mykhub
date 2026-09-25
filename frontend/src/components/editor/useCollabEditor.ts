@@ -172,7 +172,8 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
   const editor = useEditor(
     {
       extensions: [
-        StarterKit.configure({ history: false }),
+        // codeBlock: ours (syntax highlighting + language picker) replaces it.
+        StarterKit.configure({ history: false, codeBlock: false }),
         Typography,
         Placeholder.configure({ placeholder: 'Scrivi qualcosa, o "/" per i comandi…' }),
         Link.configure({ openOnClick: false, autolink: true }),
@@ -199,7 +200,13 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
           : []),
       ],
       editorProps: {
-        attributes: { class: 'editor-content focus:outline-none' },
+        attributes: {
+          class: 'editor-content focus:outline-none',
+          lang: 'it',
+          // The notes are in Italian on an English system, where every other
+          // word would be underlined as a typo.
+          spellcheck: 'false',
+        },
         handleDrop(view, event) {
           const file = event.dataTransfer?.files?.[0];
           if (!file || !file.type.startsWith('image/')) return false;

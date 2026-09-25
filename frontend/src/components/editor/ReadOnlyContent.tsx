@@ -17,7 +17,8 @@ export default function ReadOnlyContent({ content }: { content: Record<string, u
     editable: false,
     content,
     extensions: [
-      StarterKit,
+      // The shared page renders the same highlighted code block as the editor.
+      StarterKit.configure({ codeBlock: false }),
       Typography,
       Link.configure({ openOnClick: true }),
       Table,

@@ -160,6 +160,132 @@
 .ProseMirror pre code {
   @apply bg-transparent p-0;
 }
+
+/* Code blocks: a framed panel with a language picker and a copy button. */
+.code-block {
+  @apply my-4 overflow-hidden rounded-xl border border-border bg-muted/50;
+}
+.code-block__bar {
+  @apply flex items-center justify-between gap-2 border-b border-border/70 bg-muted/80 px-2 py-1;
+  user-select: none;
+}
+.code-block__lang {
+  @apply rounded-md border-0 bg-transparent py-0.5 pl-1.5 pr-5 text-xs font-medium text-muted-foreground;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 0.55rem center, right 0.3rem center;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+.code-block__lang:hover {
+  @apply bg-accent text-foreground;
+}
+.code-block__lang:focus-visible {
+  @apply outline-none ring-2 ring-ring;
+}
+.code-block__lang--static {
+  @apply pr-1.5;
+  background-image: none;
+}
+.code-block__actions {
+  @apply flex items-center gap-1;
+}
+.code-block__action {
+  @apply flex items-center gap-1 rounded-md px-1.5 py-1 text-[11px] font-medium text-muted-foreground transition-colors;
+}
+.code-block__action:hover {
+  @apply bg-accent text-foreground;
+}
+.code-block__action--danger:hover {
+  @apply bg-destructive/10 text-destructive;
+}
+.code-block__pre {
+  @apply m-0 overflow-x-auto rounded-none bg-transparent px-4 py-3;
+}
+.code-block__pre code {
+  @apply block bg-transparent p-0 font-mono text-[13px] leading-[1.65] text-foreground;
+  tab-size: 4;
+  white-space: pre;
+}
+@media print {
+  .code-block {
+    break-inside: avoid;
+  }
+  .code-block__actions {
+    display: none;
+  }
+}
+
+/* Syntax colours. One palette per theme, tuned to stay readable on the
+   muted panel rather than on pure black or white. */
+:root {
+  --code-keyword: #a626a4;
+  --code-string: #3f8f3f;
+  --code-number: #b26100;
+  --code-function: #2f6fd0;
+  --code-comment: #8b8f98;
+  --code-type: #9a6700;
+  --code-variable: #cb4b3f;
+}
+.dark {
+  --code-keyword: #c792ea;
+  --code-string: #a5d6a7;
+  --code-number: #f0b27a;
+  --code-function: #82aaff;
+  --code-comment: #8b93a3;
+  --code-type: #ecc48d;
+  --code-variable: #ef9a9a;
+}
+.hljs-comment,
+.hljs-quote {
+  color: var(--code-comment);
+  font-style: italic;
+}
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-section,
+.hljs-doctag,
+.hljs-name {
+  color: var(--code-keyword);
+}
+.hljs-string,
+.hljs-meta .hljs-string,
+.hljs-regexp,
+.hljs-addition {
+  color: var(--code-string);
+}
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+  color: var(--code-number);
+}
+.hljs-title,
+.hljs-title.function_,
+.hljs-built_in {
+  color: var(--code-function);
+}
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-meta,
+.hljs-attr,
+.hljs-attribute {
+  color: var(--code-type);
+}
+.hljs-variable,
+.hljs-template-variable,
+.hljs-params,
+.hljs-deletion {
+  color: var(--code-variable);
+}
+.hljs-emphasis {
+  font-style: italic;
+}
+.hljs-strong {
+  font-weight: 600;
+}
 .ProseMirror hr {
   @apply border-border my-6;
 }
