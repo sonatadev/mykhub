@@ -19,7 +19,7 @@ import { IndexeddbPersistence } from 'y-indexeddb';
 import { ResizableImage } from './ImageExtension';
 import { editorExtensions, SlashCommands } from './extensions';
 import { getToken } from '@/lib/api';
-import { pagesApi, uploadApi } from '@/lib/api';
+import { ApiError, pagesApi, uploadApi } from '@/lib/api';
 import { presenceColor } from '@/lib/utils';
 import type { PageFull } from '@/lib/types';
 
@@ -43,6 +43,9 @@ function base64ToUint8Array(base64: string) {
 export function useCollabEditor(pageId: number, user: { id: number; email: string }) {
   const [page, setPage] = useState<PageFull | null>(null);
   const [loading, setLoading] = useState(true);
+  // The page was deleted (or access revoked) while it was open, or from
+  // another device: there is nothing to edit and the caller must move away.
+  const [missing, setMissing] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [connection, setConnection] = useState<ConnectionStatus>('connecting');
   const [presentUsers, setPresentUsers] = useState<CollabUser[]>([]);
@@ -60,6 +63,7 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+    setMissing(false);
     seededRef.current = false;
     pageContentRef.current = null;
     setProviderReady(false);
@@ -77,11 +81,18 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
       let full: PageFull | null = null;
       try {
         full = await pagesApi.get(pageId);
-      } catch {
+      } catch (err) {
+        if (cancelled) return;
+        // A page that is gone is not an outage: say so instead of hanging on
+        // "Sincronizzazione…" over a stale IndexedDB copy.
+        if (err instanceof ApiError && (err.status === 404 || err.status === 403)) {
+          setMissing(true);
+          setLoading(false);
+          return;
+        }
         // No network: carry on with whatever IndexedDB has for this page
         // rather than leaving a skeleton on screen. The socket below will
         // reconcile as soon as there is a connection again.
-        if (cancelled) return;
         await local.whenSynced;
         if (cancelled) return;
         setSaveStatus('offline');
@@ -283,5 +294,5 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
     return () => clearInterval(interval);
   }, [connection, page, pageId, ydoc]);
 
-  return { editor, page, loading, saveStatus, connection, presentUsers, insertUploadedImage };
+  return { editor, page, loading, missing, saveStatus, connection, presentUsers, insertUploadedImage };
 }

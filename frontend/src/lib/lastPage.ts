@@ -61,3 +61,13 @@ export function lastSpaceId(userId: number): number | null {
 export function lastPageInSpace(userId: number, spaceId: number): number | null {
   return read(userId).bySpace[spaceId] ?? null;
 }
+
+/** Drops a remembered page that no longer exists, so the next visit falls
+ *  back to the sidebar instead of reopening a dead note. */
+export function forgetPage(userId: number, spaceId: number, pageId: number) {
+  const state = read(userId);
+  if (state.bySpace[spaceId] !== pageId) return;
+  const bySpace = { ...state.bySpace };
+  delete bySpace[spaceId];
+  write(userId, { spaceId: state.spaceId, bySpace });
+}

@@ -17,10 +17,13 @@ export default function Editor({
   user,
   contentFont,
   onStatusChange,
+  onMissing,
 }: {
   pageId: number;
   user: { id: number; email: string };
   contentFont: ContentFont;
+  /** Called when the page no longer exists, so the route can move away. */
+  onMissing?: () => void;
   onStatusChange: (state: {
     saveStatus: SaveStatus;
     connection: ConnectionStatus;
@@ -28,7 +31,7 @@ export default function Editor({
     shareToken: string | null;
   }) => void;
 }) {
-  const { editor, page, loading, saveStatus, connection, presentUsers, insertUploadedImage } = useCollabEditor(
+  const { editor, page, loading, missing, saveStatus, connection, presentUsers, insertUploadedImage } = useCollabEditor(
     pageId,
     user
   );
@@ -38,6 +41,10 @@ export default function Editor({
   // Mirrors the title textarea: a textarea prints as an empty box, so the
   // printed page renders this heading instead.
   const [titleText, setTitleText] = useState('');
+
+  useEffect(() => {
+    if (missing) onMissing?.();
+  }, [missing, onMissing]);
 
   useEffect(() => {
     onStatusChange({ saveStatus, connection, presentUsers, shareToken: page?.share_token ?? null });
@@ -138,6 +145,14 @@ export default function Editor({
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : 'Caricamento immagine non riuscito');
     }
+  }
+
+  if (missing) {
+    return (
+      <div className="flex h-full items-center justify-center px-6 text-center">
+        <p className="text-sm text-muted-foreground">Questa nota non esiste più.</p>
+      </div>
+    );
   }
 
   if (loading || !editor) {

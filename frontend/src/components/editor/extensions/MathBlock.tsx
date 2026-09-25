@@ -40,6 +40,9 @@ declare module '@tiptap/core' {
 
 function MathBlockView({ node, updateAttributes, editor, getPos, selected, deleteNode }: NodeViewProps) {
   const latex = (node.attrs.latex as string) ?? '';
+  // Key results get a slightly bigger, tinted frame so they stand out when
+  // the page is skimmed. It is only presentation: the formula is unchanged.
+  const emphasis = node.attrs.emphasis === true;
   // An empty block has nothing to show, so it opens straight in edit mode.
   const [editing, setEditing] = useState(() => editor.isEditable && latex.trim() === '');
   const [draft, setDraft] = useState(latex);
@@ -116,7 +119,12 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
   return (
     <NodeViewWrapper
       as="div"
-      className={cn('math-block', selected && 'math-block--selected', !html && 'math-block--blank')}
+      className={cn(
+        'math-block',
+        selected && 'math-block--selected',
+        emphasis && 'math-block--emphasis',
+        !html && 'math-block--blank'
+      )}
       data-type="math-block"
     >
       {!editing && (
@@ -142,6 +150,17 @@ function MathBlockView({ node, updateAttributes, editor, getPos, selected, delet
               Formula<span className="math-block__hint-key"> · Tab tra i campi · Invio per chiudere</span>
             </span>
             <div className="math-block__actions">
+            <button
+              type="button"
+              className={cn('math-block__emphasis', emphasis && 'math-block__emphasis--on')}
+              aria-pressed={emphasis}
+              title="Mette in evidenza la formula: riquadro colorato e testo più grande"
+              onPointerDown={(e) => e.preventDefault()}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => updateAttributes({ emphasis: !emphasis })}
+            >
+              {emphasis ? 'Normale' : 'Evidenzia'}
+            </button>
             <button
               type="button"
               className="math-block__delete"
@@ -187,6 +206,12 @@ export const MathBlock = Node.create({
         default: '',
         parseHTML: (element) => element.getAttribute('data-latex') ?? element.textContent ?? '',
         renderHTML: (attributes) => ({ 'data-latex': attributes.latex }),
+      },
+      emphasis: {
+        default: false,
+        parseHTML: (element) => element.getAttribute('data-emphasis') === 'true',
+        renderHTML: (attributes) =>
+          attributes.emphasis ? { 'data-emphasis': 'true' } : {},
       },
     };
   },
