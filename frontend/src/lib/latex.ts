@@ -87,7 +87,9 @@ function renderBlocks(nodes: JSONContent[] | undefined): string[] {
       case 'paragraph': {
         const body = renderInline(node.content);
         if (!body.trim()) break;
-        if (node.attrs?.textAlign === 'center') out.push('\\begin{center}', body, '\\end{center}', '');
+        // LaTeX justifies by default, so only center and right need an environment.
+        const env = ({ center: 'center', right: 'flushright' } as Record<string, string>)[String(node.attrs?.textAlign)];
+        if (env) out.push(`\\begin{${env}}`, body, `\\end{${env}}`, '');
         else out.push(body, '');
         break;
       }

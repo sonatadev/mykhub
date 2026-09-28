@@ -4,6 +4,8 @@ import {
   Italic,
   Underline as UnderlineIcon,
   AlignCenter,
+  AlignRight,
+  AlignJustify,
   Heading1,
   Heading2,
   List,
@@ -20,6 +22,13 @@ import TableGridPopover from './TableGridPopover';
 import LinkPopover from './LinkPopover';
 import TheoremMenu from './TheoremMenu';
 import MathSymbolMenu from './MathSymbolMenu';
+
+// Pressing the active one again goes back to the default, left.
+const ALIGNMENTS = [
+  { value: 'center', label: 'Centra', shortcut: 'Ctrl+Shift+E', Icon: AlignCenter },
+  { value: 'right', label: 'Allinea a destra', shortcut: 'Ctrl+Shift+R', Icon: AlignRight },
+  { value: 'justify', label: 'Giustifica', shortcut: 'Ctrl+Shift+J', Icon: AlignJustify },
+];
 
 export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPickImage: () => void }) {
   return (
@@ -48,19 +57,22 @@ export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPic
       >
         <UnderlineIcon />
       </Toggle>
-      <Toggle
-        size="sm"
-        pressed={editor.isActive({ textAlign: 'center' })}
-        onPressedChange={(on) =>
-          on
-            ? editor.chain().focus().setTextAlign('center').run()
-            : editor.chain().focus().unsetTextAlign().run()
-        }
-        aria-label="Centra (Ctrl+Shift+E)"
-        title="Centra — Ctrl+Shift+E"
-      >
-        <AlignCenter />
-      </Toggle>
+      {ALIGNMENTS.map(({ value, label, shortcut, Icon }) => (
+        <Toggle
+          key={value}
+          size="sm"
+          pressed={editor.isActive({ textAlign: value })}
+          onPressedChange={(on) =>
+            on
+              ? editor.chain().focus().setTextAlign(value).run()
+              : editor.chain().focus().unsetTextAlign().run()
+          }
+          aria-label={`${label} (${shortcut})`}
+          title={`${label} — ${shortcut}`}
+        >
+          <Icon />
+        </Toggle>
+      ))}
 
       <Separator orientation="vertical" className="mx-1 h-5" />
 
