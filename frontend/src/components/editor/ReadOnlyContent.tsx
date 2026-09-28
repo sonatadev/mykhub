@@ -9,6 +9,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
 import Image from '@tiptap/extension-image';
 import { mathExtensions } from './extensions';
 
@@ -28,6 +29,7 @@ export default function ReadOnlyContent({ content }: { content: Record<string, u
       TaskList,
       TaskItem.configure({ nested: true }),
       Underline,
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Image,
       ...mathExtensions,
     ],

@@ -3,6 +3,7 @@ import {
   Bold,
   Italic,
   Underline as UnderlineIcon,
+  AlignCenter,
   Heading1,
   Heading2,
   List,
@@ -46,6 +47,19 @@ export default function Toolbar({ editor, onPickImage }: { editor: Editor; onPic
         aria-label="Sottolineato"
       >
         <UnderlineIcon />
+      </Toggle>
+      <Toggle
+        size="sm"
+        pressed={editor.isActive({ textAlign: 'center' })}
+        onPressedChange={(on) =>
+          on
+            ? editor.chain().focus().setTextAlign('center').run()
+            : editor.chain().focus().unsetTextAlign().run()
+        }
+        aria-label="Centra (Ctrl+Shift+E)"
+        title="Centra — Ctrl+Shift+E"
+      >
+        <AlignCenter />
       </Toggle>
 
       <Separator orientation="vertical" className="mx-1 h-5" />

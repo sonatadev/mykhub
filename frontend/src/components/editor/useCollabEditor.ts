@@ -11,6 +11,7 @@ import TableHeader from '@tiptap/extension-table-header';
 import TaskList from '@tiptap/extension-task-list';
 import TaskItem from '@tiptap/extension-task-item';
 import Underline from '@tiptap/extension-underline';
+import TextAlign from '@tiptap/extension-text-align';
 import Collaboration from '@tiptap/extension-collaboration';
 import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import * as Y from 'yjs';
@@ -184,6 +185,7 @@ export function useCollabEditor(pageId: number, user: { id: number; email: strin
         TaskList,
         TaskItem.configure({ nested: true }),
         Underline,
+        TextAlign.configure({ types: ['heading', 'paragraph'] }),
         ResizableImage,
         ...editorExtensions,
         SlashCommands.configure({

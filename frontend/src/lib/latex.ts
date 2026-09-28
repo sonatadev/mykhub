@@ -86,7 +86,9 @@ function renderBlocks(nodes: JSONContent[] | undefined): string[] {
       }
       case 'paragraph': {
         const body = renderInline(node.content);
-        if (body.trim()) out.push(body, '');
+        if (!body.trim()) break;
+        if (node.attrs?.textAlign === 'center') out.push('\\begin{center}', body, '\\end{center}', '');
+        else out.push(body, '');
         break;
       }
       case 'mathBlock':
